@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Forecast" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_forecast_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout>

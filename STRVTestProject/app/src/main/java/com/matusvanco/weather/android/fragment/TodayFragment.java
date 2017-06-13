@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,21 +36,17 @@ import butterknife.Unbinder;
 
 public class TodayFragment extends Fragment implements OnTodayPrecipitationImageLoadedListener {
 
-    public interface OnDataLoadedListener {
-        public void onDataLoaded();
-    }
-
     @BindView(R.id.fragment_today_city)
-    TextView cityTextView;
+    AppCompatTextView cityTextView;
 
     @BindView(R.id.fragment_today_precipitation_icon)
-    ImageView precipitationImageView;
+    AppCompatImageView precipitationImageView;
 
     @BindView(R.id.fragment_today_precipitation_text)
-    TextView precipitationTextView;
+    AppCompatTextView precipitationTextView;
 
     @BindView(R.id.fragment_today_temperature)
-    TextView temperatureTextView;
+    AppCompatTextView temperatureTextView;
 
     @BindView(R.id.fragment_today_weather_parameter_humidity)
     WeatherParameter humidityParameterTextView;
@@ -110,9 +108,7 @@ public class TodayFragment extends Fragment implements OnTodayPrecipitationImage
 
         loadEmptyCurrentWeater();
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WeatherServiceBroadcastType.CURRENT_WEATHER_DID_CHANGE.getValue());
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(todayFragmentReceiver, intentFilter);
+
 
         WeatherService.getInstance(getContext()).reloadCurrentWeather();
     }
@@ -120,7 +116,16 @@ public class TodayFragment extends Fragment implements OnTodayPrecipitationImage
     @Override
     public void onResume() {
         super.onResume();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WeatherServiceBroadcastType.CURRENT_WEATHER_DID_CHANGE.getValue());
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(todayFragmentReceiver, intentFilter);
         WeatherService.getInstance(getContext()).reloadCurrentWeather();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(todayFragmentReceiver);
     }
 
     @Override
@@ -135,6 +140,12 @@ public class TodayFragment extends Fragment implements OnTodayPrecipitationImage
             throw new ClassCastException(context.toString()
                     + " must implement OnDataLoadedListener");
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     @Override

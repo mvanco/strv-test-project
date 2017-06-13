@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/forecast_adapter_row_item_padding">
+
+    <RelativeLayout
+        android:id="@+id/forecast_adapter_row_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/forecast_adapter_row_item__icon_end_margin">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/precipitation_blue_oval_background" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/forecast_adapter_row_item_weather_icon"
+            android:layout_width="@dimen/forecast_adapter_row_item_weather_icon_size"
+            android:layout_height="@dimen/forecast_adapter_row_item_weather_icon_size"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/forecast_adapter_row_item_main_weather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/forecast_adapter_row_item_icon"
+        style="@style/ForecastAdapterTitle"
+        tools:text="dalsia"/>
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/forecast_adapter_row_item_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/forecast_adapter_row_item_icon"
+        android:layout_below="@id/forecast_adapter_row_item_main_weather"
+        tools:text="skuska"/>
+
+</RelativeLayout>

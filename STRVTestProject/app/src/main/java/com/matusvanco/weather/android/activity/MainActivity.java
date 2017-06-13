@@ -32,6 +32,7 @@ import com.matusvanco.weather.android.api.APIInterface;
 import com.matusvanco.weather.android.entity.Forecast;
 import com.matusvanco.weather.android.entity.Temp;
 import com.matusvanco.weather.android.fragment.ForecastFragment;
+import com.matusvanco.weather.android.fragment.OnDataLoadedListener;
 import com.matusvanco.weather.android.fragment.SettingsFragment;
 import com.matusvanco.weather.android.fragment.TodayFragment;
 import com.matusvanco.weather.android.service.WeatherService;
@@ -44,7 +45,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, TodayFragment.OnDataLoadedListener{
+        implements NavigationView.OnNavigationItemSelectedListener, OnDataLoadedListener {
 
     /**
      * TAG for {@link TodayFragment}.

@@ -17,6 +17,7 @@ import com.matusvanco.weather.android.api.APIInterface;
 import com.matusvanco.weather.android.entity.CurrentWeather;
 import com.matusvanco.weather.android.entity.Forecast;
 import com.matusvanco.weather.android.entity.LengthUnit;
+import com.matusvanco.weather.android.entity.List;
 import com.matusvanco.weather.android.entity.TemperatureUnit;
 import com.matusvanco.weather.android.fragment.SettingsFragment;
 
@@ -67,7 +68,7 @@ public class WeatherService {
     /**
      * Forecast
      */
-    private Forecast forecast;
+    private java.util.List<List> forecastItems;
 
     /**
      * Callbacks waiting for card offers model.
@@ -153,8 +154,8 @@ public class WeatherService {
 
     }
 
-    public Forecast getForecast() {
-        return forecast;
+    public java.util.List<List> getForecastItems() {
+        return forecastItems;
     }
 
     public void reloadForecast() {
@@ -170,7 +171,7 @@ public class WeatherService {
         forecastCall.enqueue(new Callback<Forecast>() {
             @Override
             public void onResponse(Call<Forecast> call, Response<Forecast> response) {
-                setForecast(response.body());
+                setForecastItems(response.body().getList());
                 sendBroadcast(WeatherServiceBroadcastType.FORECAST_DID_CHANGE);
             }
 
@@ -247,7 +248,7 @@ public class WeatherService {
         this.currentWeather = currentWeather;
     }
 
-    private void setForecast(Forecast forecast) {
-        this.forecast = forecast;
+    private void setForecastItems(java.util.List<List> forecastItems) {
+        this.forecastItems = forecastItems;
     }
 }
