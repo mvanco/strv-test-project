@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <declare-styleable name="WeatherParameter">
+        <attr name="weatherIcon" format="reference" />
+        <attr name="weatherText" format="string" />
+        <attr name="weatherUnitFor" format="enum">
+            <enum name="humidity" value="0"/>
+            <enum name="precipitation" value="1"/>
+            <enum name="pressure" value="2"/>
+            <enum name="wind" value="3"/>
+            <enum name="direction" value="4"/>
+        </attr>
+    </declare-styleable>
+    
+</resources>

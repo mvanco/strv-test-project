@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="entries_length_list_preference">
+        <item>@string/fragment_settings_length_meter</item>
+        <item>@string/fragment_settings_length_mile</item>
+    </string-array>
+
+    <string-array name="entryvalues_length_list_preference">
+        <item>@string/fragment_settings_length_meter</item>
+        <item>@string/fragment_settings_length_mile</item>
+    </string-array>
+
+    <string-array name="entries_temperature_list_preference">
+        <item>@string/fragment_settings_temperature_celsius</item>
+        <item>@string/fragment_settings_temperature_fahrenheit</item>
+    </string-array>
+
+    <string-array name="entryvalues_temperature_list_preference">
+        <item>@string/fragment_settings_temperature_celsius</item>
+        <item>@string/fragment_settings_temperature_fahrenheit</item>
+    </string-array>
+
+</resources>

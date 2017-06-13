@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">STRVTestProject</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_about">About</string>
+
+    <string name="activity_main_drawer_today">Today</string>
+    <string name="activity_main_drawer_forecast">Forecast</string>
+
+    <string name="empty_string"></string>
+
+    <string name="fragment_settings_unit_of_length">Unit of lenght</string>
+    <string name="fragment_settings_unit_of_temperature">Unit of temperature</string>
+
+    <string name="fragment_settings_length_meter">Meter</string>
+    <string name="fragment_settings_length_mile">Mile</string>
+
+    <string name="fragment_settings_temperature_celsius">Celsius</string>
+    <string name="fragment_settings_temperature_fahrenheit">Fahrenheit</string>
+
+    <string name="dialog_about_title">About</string>
+    <string name="dialog_about_message">Weather app made by Matus Vanco.</string>
+    <string name="dialog_about_button_text">OK</string>
+    
+    <string name="api_interface_units_metric">metric</string>
+    <string name="api_interface_units_imperial">imperial</string>
+
+</resources>

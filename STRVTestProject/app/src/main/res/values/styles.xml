@@ -1,0 +1,39 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="TodayFragmentText">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+
+    <style name="TodayFragmentText.Temperature">
+        <item name="android:textSize">@dimen/fragment_today_temperature_text_size</item>
+    </style>
+
+    <style name="TodayFragmentText.City">
+        <item name="android:textSize">@dimen/fragment_today_city_text_size</item>
+    </style>
+
+    <style name="TodayFragmentText.PrecipitationText">
+        <item name="android:textSize">@dimen/fragment_today_precipitation_text_text_size</item>
+    </style>
+
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="pref_key_length_list"
+        android:title="@string/fragment_settings_unit_of_length"
+        android:summary="%s"
+        android:entries="@array/entries_length_list_preference"
+        android:entryValues="@array/entryvalues_length_list_preference"
+        android:defaultValue="@string/fragment_settings_length_meter"
+        android:dialogTitle="@string/fragment_settings_unit_of_length" />
+
+    <ListPreference
+        android:key="pref_key_temperature_list"
+        android:title="@string/fragment_settings_unit_of_temperature"
+        android:summary="%s"
+        android:entries="@array/entries_temperature_list_preference"
+        android:entryValues="@array/entryvalues_temperature_list_preference"
+        android:defaultValue="@string/fragment_settings_temperature_celsius"
+        android:dialogTitle="@string/fragment_settings_unit_of_temperature" />
+
+</PreferenceScreen>

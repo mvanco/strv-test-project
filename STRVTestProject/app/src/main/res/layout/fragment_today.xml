@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/fragment_today_weather_parameters"
+        android:src="@drawable/brno"
+        android:scaleType="centerCrop"
+        />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fragment_today_gradient_rectangle_background_height"
+        android:layout_above="@id/fragment_today_weather_parameters"
+        android:src="@drawable/gradient_rectangle_background"/>
+
+    <TextView
+        android:id="@+id/fragment_today_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_today_precipitation"
+        android:layout_marginLeft="@dimen/fragment_today_horizontal_padding"
+        android:layout_marginBottom="@dimen/fragment_today_city_bottom_margin"
+        style="@style/TodayFragmentText.City"
+        tools:text="Brno"
+        />
+
+    <LinearLayout
+        android:id="@id/fragment_today_precipitation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_today_weather_parameters"
+        android:layout_marginBottom="@dimen/fragment_today_precipitation_bottom_margin"
+        android:layout_marginLeft="@dimen/fragment_today_horizontal_padding"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/fragment_today_precipitation_end_margin">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/precipitation_grey_oval_background" />
+
+            <ImageView
+                android:id="@+id/fragment_today_precipitation_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_centerInParent="true" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/fragment_today_precipitation_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TodayFragmentText.PrecipitationText"
+            tools:text="Light Rain"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/fragment_today_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_today_weather_parameters"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/fragment_today_temperature_bottom_margin"
+        android:layout_marginRight="@dimen/fragment_today_horizontal_padding"
+        style="@style/TodayFragmentText.Temperature"
+        tools:text="27~C"
+        />
+
+    <android.support.v7.widget.GridLayout
+        android:id="@id/fragment_today_weather_parameters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/fragment_today_weather_parameters_top_margin"
+        android:layout_marginBottom="@dimen/fragment_today_weather_parameters_bottom_margin"
+        android:layout_marginLeft="@dimen/fragment_today_horizontal_padding"
+        android:layout_marginRight="@dimen/fragment_today_horizontal_padding"
+        app:columnCount="3"
+
+        >
+
+        <com.matusvanco.weather.android.view.WeatherParameter
+            android:id="@+id/fragment_today_weather_parameter_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/fragment_today_grid_layout_row_padding"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:weatherIcon="@drawable/ic_weather_humidity"
+            app:weatherUnitFor="humidity" />
+
+        <com.matusvanco.weather.android.view.WeatherParameter
+            android:id="@+id/fragment_today_weather_parameter_precipitation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/fragment_today_grid_layout_row_padding"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:weatherIcon="@drawable/ic_weather_precipitation"
+            app:weatherUnitFor="precipitation" />
+
+        <com.matusvanco.weather.android.view.WeatherParameter
+            android:id="@+id/fragment_today_weather_parameter_pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/fragment_today_grid_layout_row_padding"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:weatherIcon="@drawable/ic_weather_pressure"
+            app:weatherUnitFor="pressure" />
+
+        <com.matusvanco.weather.android.view.WeatherParameter
+            android:id="@+id/fragment_today_weather_parameter_wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:weatherIcon="@drawable/ic_weather_wind"
+            app:weatherUnitFor="wind" />
+
+        <com.matusvanco.weather.android.view.WeatherParameter
+            android:id="@+id/fragment_today_weather_parameter_direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:weatherIcon="@drawable/ic_weather_direction"
+            app:weatherUnitFor="direction"/>
+
+    </android.support.v7.widget.GridLayout>
+
+</RelativeLayout>
