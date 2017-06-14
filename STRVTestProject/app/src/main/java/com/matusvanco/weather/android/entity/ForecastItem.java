@@ -4,7 +4,7 @@ package com.matusvanco.weather.android.entity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class List {
+public class ForecastItem {
 
     @SerializedName("dt")
     @Expose

@@ -3,6 +3,7 @@ package com.matusvanco.weather.android.activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
@@ -27,22 +28,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
-import com.matusvanco.weather.android.api.APIClient;
-import com.matusvanco.weather.android.api.APIInterface;
-import com.matusvanco.weather.android.entity.Forecast;
-import com.matusvanco.weather.android.entity.Temp;
 import com.matusvanco.weather.android.fragment.ForecastFragment;
 import com.matusvanco.weather.android.fragment.OnDataLoadedListener;
-import com.matusvanco.weather.android.fragment.SettingsFragment;
 import com.matusvanco.weather.android.fragment.TodayFragment;
 import com.matusvanco.weather.android.service.WeatherService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnDataLoadedListener {
@@ -137,8 +130,8 @@ public class MainActivity extends AppCompatActivity
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        TodayFragment todayFragment = TodayFragment.getInstance();
-        fragmentTransaction.add(R.id.fragment_container, todayFragment, TODAY_FRAGMENT_TAG);
+        TodayFragment todayTodayFragment = TodayFragment.getInstance();
+        fragmentTransaction.add(R.id.fragment_container, todayTodayFragment, TODAY_FRAGMENT_TAG);
         fragmentTransaction.commit();
         getSupportActionBar().setTitle(MainActivityFragmentType.TODAY.getTitleRes());
         showInfiniteHorizontalProgressBar(); // I am still waiting for loading data.
@@ -240,6 +233,7 @@ public class MainActivity extends AppCompatActivity
         mToggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(mToggle);
+        drawer.setScrimColor(Color.TRANSPARENT);
         mToggle.syncState();
     }
 
@@ -277,6 +271,4 @@ public class MainActivity extends AppCompatActivity
     private void hideInfiniteHorizontalProgerssBar() {
         progressBar.setVisibility(View.INVISIBLE);
     }
-
-
 }

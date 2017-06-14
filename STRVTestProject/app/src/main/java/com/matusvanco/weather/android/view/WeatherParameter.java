@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.entity.LengthUnit;
-import com.matusvanco.weather.android.entity.TemperatureUnit;
 import com.matusvanco.weather.android.service.WeatherService;
 
 import butterknife.BindView;
@@ -54,7 +53,7 @@ public class WeatherParameter extends LinearLayout {
 
     private void init(Context context, AttributeSet attrs) {
         setupParentView();
-        inflate(context, R.layout.custom_view_weather_parameter, this);
+        inflate(context, R.layout.fragment_today_weather_parameter, this);
         ButterKnife.bind(this);
         setupChildrenViews(context, attrs);
     }

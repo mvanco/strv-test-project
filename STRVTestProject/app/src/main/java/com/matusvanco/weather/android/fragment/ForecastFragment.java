@@ -9,19 +9,25 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.adapter.ForecastAdapter;
-import com.matusvanco.weather.android.entity.List;
+import com.matusvanco.weather.android.entity.ForecastItem;
 import com.matusvanco.weather.android.entity.TemperatureUnit;
+import com.matusvanco.weather.android.service.OnPrecipitationIconLoadedListener;
 import com.matusvanco.weather.android.service.WeatherService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +37,7 @@ import butterknife.Unbinder;
  * Created by matva on 6/8/2017.
  */
 
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements OnPrecipitationIconLoadedListener {
 
     private static ForecastFragment instance;
 
@@ -41,9 +47,13 @@ public class ForecastFragment extends Fragment {
 
     private ForecastAdapter mAdapter;
 
-    private java.util.List<List> mForecastItems;
+    private List<ForecastItem> mForecastItems = new ArrayList<>();
 
-    @BindView(R.id.fragment_forecast_recycler_view)
+    private int forecastPrecipitationIconsLoaded = 0;
+
+    private boolean forecastFragmentItemsLoaded = false;
+
+    @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
     /**
@@ -53,7 +63,8 @@ public class ForecastFragment extends Fragment {
     private BroadcastReceiver forecastFragmentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            java.util.List<List> forecastItems = WeatherService.getInstance(getContext()).getForecastItems();
+            List<ForecastItem> forecastItems = WeatherService.getInstance(getContext()).getForecastItems();
+            forecastItems.remove(0); // We need to remove first item because it is current weather which is not needed.
             loadForecast(forecastItems);
         }
     };
@@ -79,12 +90,12 @@ public class ForecastFragment extends Fragment {
         WeatherService.getInstance(getContext()).reloadForecast();
         TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit();
 
-        mAdapter = new ForecastAdapter(mForecastItems, temperatureUnit);
+        mAdapter = new ForecastAdapter(this, mForecastItems, temperatureUnit, this);
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(mLayoutManager);
-        //recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        //recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(this.getContext(), LinearLayoutManager.VERTICAL));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
 
         return rootView;
@@ -132,9 +143,37 @@ public class ForecastFragment extends Fragment {
         unbinder.unbind();
     }
 
-    private void loadForecast(java.util.List<List> forecastItems) {
-        mForecastItems = forecastItems;
+    private void loadForecast(List<ForecastItem> forecastItems) {
+        setForecastItems(forecastItems);
         mAdapter.notifyDataSetChanged();
-        mCallback.onDataLoaded();
+
+        forecastFragmentItemsLoaded = true;
+        if (isDataLoaded()) {
+            mCallback.onDataLoaded();
+        }
     }
+
+    @Override
+    public void onPrecipitationIconLoaded() {
+        forecastPrecipitationIconsLoaded++;
+        Log.d("ForecastFragment", "Image is loaded, so far " + forecastPrecipitationIconsLoaded + " totally");
+        if (isDataLoaded()) {
+            mCallback.onDataLoaded();
+        }
+    }
+
+    private boolean isDataLoaded() {
+        //return (forecastPrecipitationIconsLoaded == mForecastItems.size()) && forecastFragmentItemsLoaded;
+        return forecastFragmentItemsLoaded;
+    }
+
+    /**
+     * Safe setter which does not create new object which is needed since adapter is already linked with original.
+     * @param forecastItems
+     */
+    public void setForecastItems(List<ForecastItem> forecastItems) {
+        this.mForecastItems.clear();
+        this.mForecastItems.addAll(forecastItems);
+    }
+
 }

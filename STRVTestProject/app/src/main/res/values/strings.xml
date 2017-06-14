@@ -12,6 +12,8 @@
 
     <string name="empty_string"></string>
 
+    <string name="fragment_forecast_row_item_preposition">on</string>
+
     <string name="fragment_settings_unit_of_length">Unit of lenght</string>
     <string name="fragment_settings_unit_of_temperature">Unit of temperature</string>
 
@@ -24,7 +26,7 @@
     <string name="dialog_about_title">About</string>
     <string name="dialog_about_message">Weather app made by Matus Vanco.</string>
     <string name="dialog_about_button_text">OK</string>
-    
+
     <string name="api_interface_units_metric">metric</string>
     <string name="api_interface_units_imperial">imperial</string>
 

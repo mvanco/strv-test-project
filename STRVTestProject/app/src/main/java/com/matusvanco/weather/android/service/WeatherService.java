@@ -17,7 +17,7 @@ import com.matusvanco.weather.android.api.APIInterface;
 import com.matusvanco.weather.android.entity.CurrentWeather;
 import com.matusvanco.weather.android.entity.Forecast;
 import com.matusvanco.weather.android.entity.LengthUnit;
-import com.matusvanco.weather.android.entity.List;
+import com.matusvanco.weather.android.entity.ForecastItem;
 import com.matusvanco.weather.android.entity.TemperatureUnit;
 import com.matusvanco.weather.android.fragment.SettingsFragment;
 
@@ -68,12 +68,12 @@ public class WeatherService {
     /**
      * Forecast
      */
-    private java.util.List<List> forecastItems;
+    private java.util.List<ForecastItem> forecastItems;
 
     /**
      * Callbacks waiting for card offers model.
      */
-    //private List<CancellableServiceCallback<CardsModel, Void>> waitingAsyncCardsCallbacks;
+    //private ForecastItem<CancellableServiceCallback<CardsModel, Void>> waitingAsyncCardsCallbacks;
 
     /**
      * Current settings.
@@ -98,7 +98,7 @@ public class WeatherService {
 
     private static final String QUERY_PARAMETER_CITY = "Brno,CZ"; // Brno,CZ
 
-    private static final int QUERY_PARAMETER_FORECAST_COUNT = 7;
+    private static final int QUERY_PARAMETER_FORECAST_COUNT = 8;
 
     private static final String QUERY_PARAMETER_APP_ID = "1c8254bc0e4c06431648f7aa6d641537";
 
@@ -154,7 +154,7 @@ public class WeatherService {
 
     }
 
-    public java.util.List<List> getForecastItems() {
+    public java.util.List<ForecastItem> getForecastItems() {
         return forecastItems;
     }
 
@@ -182,8 +182,8 @@ public class WeatherService {
         });
     }
 
-    public void loadTodayPrecipitationImage(Fragment fragment, String iconTitle, ImageView view, final OnTodayPrecipitationImageLoadedListener callback) {
-        if (fragment.getActivity() != null) { // Fragment must be already attached to activity.
+    public void loadPrecipitationImage(Fragment fragment, String iconTitle, ImageView view, final OnPrecipitationIconLoadedListener callback) {
+        if (fragment.getActivity() != null) { // TodayFragment must be already attached to activity.
             Glide.with(fragment).load(WEATHER_ICON_BASE_URL + iconTitle + WEATHER_ICON_SUFFIX)
                 .listener(new RequestListener<String, GlideDrawable>() {
                 @Override
@@ -193,7 +193,7 @@ public class WeatherService {
 
                 @Override
                 public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    callback.onTodayPrecipitationImageLoaded();
+                    callback.onPrecipitationIconLoaded();
                     return false;
                 }
             }).into(view);
@@ -235,10 +235,6 @@ public class WeatherService {
         return temperatureUnit;
     }
 
-//    public String getLengthUnits() {
-//        return lengthUnits; //TODO is needed?
-//    }
-
     private void sendBroadcast(WeatherServiceBroadcastType weatherServiceBroadcastType) {
         Intent intent = new Intent(weatherServiceBroadcastType.getValue());
         LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
@@ -248,7 +244,7 @@ public class WeatherService {
         this.currentWeather = currentWeather;
     }
 
-    private void setForecastItems(java.util.List<List> forecastItems) {
+    private void setForecastItems(java.util.List<ForecastItem> forecastItems) {
         this.forecastItems = forecastItems;
     }
 }

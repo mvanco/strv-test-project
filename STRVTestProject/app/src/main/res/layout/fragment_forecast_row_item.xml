@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/fragment_forecast_row_item_padding">
+
+    <RelativeLayout
+        android:id="@+id/fragment_forecast_row_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/fragment_forecast_row_item_icon_end_margin">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/precipitation_blue_oval_background" />
+
+        <ImageView
+            android:id="@+id/fragment_forecast_row_item_weather_icon"
+            android:layout_width="@dimen/fragment_forecast_row_item_weather_icon_size"
+            android:layout_height="@dimen/fragment_forecast_row_item_weather_icon_size"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/fragment_forecast_row_item_icon"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/fragment_forecast_row_item_main_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/fragment_forecast_row_item_main_weather_bottom_margin"
+            style="@style/ForecastFragmentWeatherText"
+            tools:text="dalsia"/>
+
+        <TextView
+            android:id="@+id/fragment_forecast_row_item_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_forecast_row_item_main_weather"
+            style="@style/ForecastFragmentTemperature"
+            tools:text="skuska"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

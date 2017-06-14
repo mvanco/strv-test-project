@@ -29,11 +29,13 @@
     <dimen name="custom_view_weather_parameter_icon_end_margin">8dp</dimen>
 
     <dimen name="precipitation_grey_oval_background_size">26dp</dimen>
-    <dimen name="precipitation_blue_oval_background_size">46dp</dimen>
+    <dimen name="precipitation_blue_oval_background_size">52dp</dimen>
 
-    <dimen name="forecast_adapter_row_item__icon_end_margin">7dp</dimen>
-    <dimen name="forecast_adapter_row_item_weather_icon_size">22dp</dimen>
-    <dimen name="forecast_adapter_row_item_padding">15dp</dimen>
-    <dimen name="forecast_adapter_row_item_title_text_size">18dp</dimen>
+    <dimen name="fragment_forecast_row_item_icon_end_margin">14dp</dimen>
+    <dimen name="fragment_forecast_row_item_weather_icon_size">40dp</dimen>
+    <dimen name="fragment_forecast_row_item_padding">15dp</dimen>
+    <dimen name="fragment_forecast_row_item_weather_text_text_size">16dp</dimen>
+    <dimen name="fragment_forecast_row_item_temperature_text_size">13dp</dimen>
+    <dimen name="fragment_forecast_row_item_main_weather_bottom_margin">5dp</dimen>
 
 </resources>

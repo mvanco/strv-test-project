@@ -6,22 +6,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.entity.CurrentWeather;
 import com.matusvanco.weather.android.entity.LengthUnit;
 import com.matusvanco.weather.android.entity.Temp;
 import com.matusvanco.weather.android.entity.TemperatureUnit;
-import com.matusvanco.weather.android.service.OnTodayPrecipitationImageLoadedListener;
+import com.matusvanco.weather.android.service.OnPrecipitationIconLoadedListener;
 import com.matusvanco.weather.android.service.WeatherService;
 import com.matusvanco.weather.android.service.WeatherService.WeatherServiceBroadcastType;
 import com.matusvanco.weather.android.view.WeatherParameter;
@@ -34,7 +31,7 @@ import butterknife.Unbinder;
  * Created by matva on 6/8/2017.
  */
 
-public class TodayFragment extends Fragment implements OnTodayPrecipitationImageLoadedListener {
+public class TodayFragment extends android.support.v4.app.Fragment implements OnPrecipitationIconLoadedListener {
 
     @BindView(R.id.fragment_today_city)
     AppCompatTextView cityTextView;
@@ -149,7 +146,7 @@ public class TodayFragment extends Fragment implements OnTodayPrecipitationImage
     }
 
     @Override
-    public void onTodayPrecipitationImageLoaded() {
+    public void onPrecipitationIconLoaded() {
         todayPrecipitationImageLoaded = true;
         if (todayPrecipitationImageLoaded && todayFragmentTextViewsLoaded) {
             mCallback.onDataLoaded();
@@ -167,7 +164,7 @@ public class TodayFragment extends Fragment implements OnTodayPrecipitationImage
     private void loadCurrentWeather(CurrentWeather currentWeather) {
         cityTextView.setText(currentWeather.getName());
 
-        WeatherService.getInstance(getContext()).loadTodayPrecipitationImage(
+        WeatherService.getInstance(getContext()).loadPrecipitationImage(
                 this, currentWeather.getWeather().get(0).getIcon(), precipitationImageView, this);
 
         precipitationTextView.setText(currentWeather.getWeather().get(0).getMain());

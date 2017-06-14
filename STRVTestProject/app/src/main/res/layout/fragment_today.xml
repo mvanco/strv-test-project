@@ -45,13 +45,13 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/fragment_today_precipitation_end_margin">
 
-            <android.support.v7.widget.AppCompatImageView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:src="@drawable/precipitation_grey_oval_background" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <ImageView
                 android:id="@+id/fragment_today_precipitation_icon"
                 android:layout_width="@dimen/fragment_today_precipitation_icon_size"
                 android:layout_height="@dimen/fragment_today_precipitation_icon_size"
@@ -59,7 +59,7 @@
 
         </RelativeLayout>
 
-        <android.support.v7.widget.AppCompatTextView
+        <TextView
             android:id="@+id/fragment_today_precipitation_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:id="@+id/fragment_today_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

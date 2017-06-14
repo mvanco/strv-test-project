@@ -20,7 +20,7 @@ public class Forecast {
     private Integer cnt;
     @SerializedName("list")
     @Expose
-    private java.util.List<List> list = null;
+    private java.util.List<ForecastItem> list = null;
 
     public City getCity() {
         return city;
@@ -54,11 +54,11 @@ public class Forecast {
         this.cnt = cnt;
     }
 
-    public java.util.List<List> getList() {
+    public java.util.List<ForecastItem> getList() {
         return list;
     }
 
-    public void setList(java.util.List<List> list) {
+    public void setList(java.util.List<ForecastItem> list) {
         this.list = list;
     }
 
