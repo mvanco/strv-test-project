@@ -17,4 +17,20 @@ public class Rain {
     public void set3h(Double _3h) {
         this._3h = _3h;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Rain rain = (Rain) o;
+
+        return _3h != null ? _3h.equals(rain._3h) : rain._3h == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return _3h != null ? _3h.hashCode() : 0;
+    }
 }

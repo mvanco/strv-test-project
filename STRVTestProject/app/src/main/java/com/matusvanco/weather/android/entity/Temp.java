@@ -99,4 +99,31 @@ public class Temp {
     public void setMorn(Double morn) {
         this.morn = morn;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Temp temp = (Temp) o;
+
+        if (day != null ? !day.equals(temp.day) : temp.day != null) return false;
+        if (min != null ? !min.equals(temp.min) : temp.min != null) return false;
+        if (max != null ? !max.equals(temp.max) : temp.max != null) return false;
+        if (night != null ? !night.equals(temp.night) : temp.night != null) return false;
+        if (eve != null ? !eve.equals(temp.eve) : temp.eve != null) return false;
+        return morn != null ? morn.equals(temp.morn) : temp.morn == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = day != null ? day.hashCode() : 0;
+        result = 31 * result + (min != null ? min.hashCode() : 0);
+        result = 31 * result + (max != null ? max.hashCode() : 0);
+        result = 31 * result + (night != null ? night.hashCode() : 0);
+        result = 31 * result + (eve != null ? eve.hashCode() : 0);
+        result = 31 * result + (morn != null ? morn.hashCode() : 0);
+        return result;
+    }
 }

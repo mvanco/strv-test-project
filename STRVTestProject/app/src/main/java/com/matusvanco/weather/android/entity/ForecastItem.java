@@ -113,4 +113,39 @@ public class ForecastItem {
     public void setRain(Double rain) {
         this.rain = rain;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ForecastItem that = (ForecastItem) o;
+
+        if (dt != null ? !dt.equals(that.dt) : that.dt != null) return false;
+        if (temp != null ? !temp.equals(that.temp) : that.temp != null) return false;
+        if (pressure != null ? !pressure.equals(that.pressure) : that.pressure != null)
+            return false;
+        if (humidity != null ? !humidity.equals(that.humidity) : that.humidity != null)
+            return false;
+        if (weather != null ? !weather.equals(that.weather) : that.weather != null) return false;
+        if (speed != null ? !speed.equals(that.speed) : that.speed != null) return false;
+        if (deg != null ? !deg.equals(that.deg) : that.deg != null) return false;
+        if (clouds != null ? !clouds.equals(that.clouds) : that.clouds != null) return false;
+        return rain != null ? rain.equals(that.rain) : that.rain == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = dt != null ? dt.hashCode() : 0;
+        result = 31 * result + (temp != null ? temp.hashCode() : 0);
+        result = 31 * result + (pressure != null ? pressure.hashCode() : 0);
+        result = 31 * result + (humidity != null ? humidity.hashCode() : 0);
+        result = 31 * result + (weather != null ? weather.hashCode() : 0);
+        result = 31 * result + (speed != null ? speed.hashCode() : 0);
+        result = 31 * result + (deg != null ? deg.hashCode() : 0);
+        result = 31 * result + (clouds != null ? clouds.hashCode() : 0);
+        result = 31 * result + (rain != null ? rain.hashCode() : 0);
+        return result;
+    }
 }

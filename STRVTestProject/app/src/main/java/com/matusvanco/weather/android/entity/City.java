@@ -65,4 +65,29 @@ public class City {
     public void setPopulation(Integer population) {
         this.population = population;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        City city = (City) o;
+
+        if (id != null ? !id.equals(city.id) : city.id != null) return false;
+        if (name != null ? !name.equals(city.name) : city.name != null) return false;
+        if (coord != null ? !coord.equals(city.coord) : city.coord != null) return false;
+        if (country != null ? !country.equals(city.country) : city.country != null) return false;
+        return population != null ? population.equals(city.population) : city.population == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (coord != null ? coord.hashCode() : 0);
+        result = 31 * result + (country != null ? country.hashCode() : 0);
+        result = 31 * result + (population != null ? population.hashCode() : 0);
+        return result;
+    }
 }

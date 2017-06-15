@@ -19,11 +19,6 @@ import butterknife.Unbinder;
 public class SettingsActivity extends AppCompatActivity {
 
     /**
-     * TAG for {@link ForecastFragment}.
-     */
-    private static final String SETTINGS_FRAGMENT_TAG = "SettingsFragment";
-
-    /**
      * Unbinder for {@link ButterKnife}
      */
     private Unbinder mUnbinder;

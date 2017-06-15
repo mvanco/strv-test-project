@@ -32,10 +32,22 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import static com.matusvanco.weather.android.service.WeatherService.WeatherServiceBroadcastType.FORECAST_DATA_RETURNED;
+
 /**
  * Forecast page after selection in side menu.
  */
 public class ForecastFragment extends Fragment implements OnPrecipitationIconLoadedListener, OnAddPrecipitationIconToLoadListener {
+
+    /**
+     * Key for storing the {@code todayFragmentTextViewsLoaded} field.
+     */
+    private static final String FORECAST_FRAGMENT_ITEMS_LOADED_KEY = "com.matusvanco.weather.android.forecastFragmentItemsLoaded";
+
+    /**
+     * Key for storing the {@code todayPrecipitationImageLoaded} field.
+     */
+    private static final String FORECAST_PRECIPITATION_ICONS_TO_LOAD_KEY = "com.matusvanco.weather.android.forecastPrecipitationIconsToLoad";
 
     /**
      * Singleton instance of ForecastFragment.
@@ -59,14 +71,14 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     private ForecastAdapter mAdapter;
 
     /**
-     * How many icons should be still load (progress bar must be active).
-     */
-    private int forecastPrecipitationIconsToLoad = 0;
-
-    /**
      * True if there is returned list of weater texts with temperatures from server to show.
      */
     private boolean forecastFragmentItemsLoaded = false;
+
+    /**
+     * How many icons should be still load (progress bar must be active).
+     */
+    private int forecastPrecipitationIconsToLoad = 0;
 
     /**
      * View that shows list of forecast items.
@@ -81,9 +93,12 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     private BroadcastReceiver forecastFragmentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            List<ForecastItem> forecastItems = WeatherService.getInstance(getContext()).getForecastItems();
-            forecastItems.remove(0); // We need to remove first item because it is current weather which is not needed.
-            loadForecast(forecastItems);
+            String action = intent.getAction();
+            if (action == FORECAST_DATA_RETURNED.getValue()) {
+                List<ForecastItem> forecastItems = WeatherService.getInstance(getContext()).getForecastItems();
+                forecastItems.remove(0); // We need to remove first item because it is current weather which is not needed.
+                loadForecast(forecastItems);
+            }
         }
     };
 
@@ -103,6 +118,16 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
         unbinder = ButterKnife.bind(this, rootView);
 
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(FORECAST_FRAGMENT_ITEMS_LOADED_KEY)) {
+                forecastFragmentItemsLoaded = savedInstanceState.getBoolean(FORECAST_FRAGMENT_ITEMS_LOADED_KEY);
+            }
+
+            if (savedInstanceState.containsKey(FORECAST_PRECIPITATION_ICONS_TO_LOAD_KEY)) {
+                forecastPrecipitationIconsToLoad = savedInstanceState.getInt(FORECAST_PRECIPITATION_ICONS_TO_LOAD_KEY);
+            }
+        }
+
         TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit();
         mAdapter = new ForecastAdapter(this, new ArrayList<ForecastItem>(), temperatureUnit);
 
@@ -119,7 +144,7 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     public void onResume() {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WeatherService.WeatherServiceBroadcastType.FORECAST_DID_CHANGE.getValue());
+        intentFilter.addAction(FORECAST_DATA_RETURNED.getValue());
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(forecastFragmentReceiver, intentFilter);
 
         WeatherService.getInstance(getContext()).reloadForecast();
@@ -140,6 +165,14 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnDataLoadedListener");
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(FORECAST_FRAGMENT_ITEMS_LOADED_KEY, forecastFragmentItemsLoaded);
+        outState.putInt(FORECAST_PRECIPITATION_ICONS_TO_LOAD_KEY, forecastPrecipitationIconsToLoad);
     }
 
     @Override

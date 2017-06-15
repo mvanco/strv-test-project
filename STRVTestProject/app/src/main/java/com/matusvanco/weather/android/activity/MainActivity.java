@@ -54,6 +54,16 @@ public class MainActivity extends AppCompatActivity
     private static final String FORECAST_FRAGMENT_TAG = "ForecastFragment";
 
     /**
+     * Key for the {@code selectedNavigationItemId} field.
+     */
+    private static final String SELECTED_NAVIGATION_ITEM_ID_KEY = "com.matusvanco.weather.android.selectedNavigationItemId";
+
+    /**
+     * Key for the {@code fragmentType} field.
+     */
+    private static final String FRAGMENT_TYPE_KEY = "com.matusvanco.weather.android.fragmentType";
+
+    /**
      * Current settings.
      */
     SharedPreferences preferences;
@@ -72,6 +82,25 @@ public class MainActivity extends AppCompatActivity
          */
         final int itemId;
 
+        /**
+         * Default fragment type instance.
+         */
+        private static MainActivityFragmentType defaultInstance = MainActivityFragmentType.TODAY;
+
+        /**
+         * Create new instance of MainActivityFragmentType from item id.
+         * @param itemId Which item id is used for creation
+         * @return Instance of {@link MainActivityFragmentType}
+         */
+        public static MainActivityFragmentType fromItemId(@IdRes int itemId) {
+            for (MainActivityFragmentType fragmentType : MainActivityFragmentType.values()) {
+                if (fragmentType.itemId == itemId) {
+                    return fragmentType;
+                }
+            }
+            return defaultInstance;
+        }
+
         MainActivityFragmentType(@StringRes int titleRes, @IdRes int itemId) {
             this.titleRes = titleRes;
             this.itemId = itemId;
@@ -81,13 +110,8 @@ public class MainActivity extends AppCompatActivity
             return titleRes;
         }
 
-        public static int getTitleRes(@IdRes int itemId) {
-            for (MainActivityFragmentType fragmentType : MainActivityFragmentType.values()) {
-                if (fragmentType.itemId == itemId) {
-                    return fragmentType.getTitleRes();
-                }
-            }
-            return R.string.empty_string;
+        public int getItemId() {
+            return itemId;
         }
     }
 
@@ -126,9 +150,9 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle mToggle;
 
     /**
-     * Id of currently selected navigation item.
+     * Type of fragment which should be currently shown.
      */
-    private int selectedNavigationItemId = R.id.nav_today;
+    private MainActivityFragmentType fragmentType = MainActivityFragmentType.TODAY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,12 +169,25 @@ public class MainActivity extends AppCompatActivity
          */
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        TodayFragment todayTodayFragment = TodayFragment.getInstance();
-        fragmentTransaction.add(R.id.activity_main_content_fragment_container, todayTodayFragment, TODAY_FRAGMENT_TAG);
-        fragmentTransaction.commit();
-        getSupportActionBar().setTitle(MainActivityFragmentType.TODAY.getTitleRes());
+        if (savedInstanceState == null) { // Add initial fragment only during first start.
+            TodayFragment todayTodayFragment = TodayFragment.getInstance();
+            fragmentTransaction.add(R.id.activity_main_content_fragment_container, todayTodayFragment, TODAY_FRAGMENT_TAG);
+            fragmentTransaction.commit();
+        } else {
+            if (savedInstanceState.containsKey(FRAGMENT_TYPE_KEY)) {
+                fragmentType = MainActivityFragmentType.values()[savedInstanceState.getInt(FRAGMENT_TYPE_KEY)];
+            }
+        }
+        getSupportActionBar().setTitle(fragmentType.getTitleRes());
 
         showInfiniteHorizontalProgressBar(); // I am still waiting for loading data.
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(FRAGMENT_TYPE_KEY, fragmentType.ordinal());
     }
 
     @Override
@@ -200,22 +237,24 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        if (selectedNavigationItemId != item.getItemId()) { // Different option than already shown has been selected.
-            selectedNavigationItemId = item.getItemId();
+        if (fragmentType.getItemId() != item.getItemId()) { // Different option than already shown has been selected.
+            fragmentType = MainActivityFragmentType.fromItemId(item.getItemId());
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            if (selectedNavigationItemId == R.id.nav_today) {
+            if (fragmentType.getItemId() == R.id.nav_today) {
+                fragmentType = MainActivityFragmentType.TODAY;
                 fragmentTransaction.replace(R.id.activity_main_content_fragment_container, TodayFragment.getInstance(), TODAY_FRAGMENT_TAG);
-            } else if (selectedNavigationItemId == R.id.nav_forecast) {
+            } else if (fragmentType.getItemId() == R.id.nav_forecast) {
+                fragmentType = MainActivityFragmentType.FORECAST;
                 fragmentTransaction.replace(R.id.activity_main_content_fragment_container, ForecastFragment.getInstance(), FORECAST_FRAGMENT_TAG);
             }
             fragmentTransaction.commit();
-            getSupportActionBar().setTitle(MainActivityFragmentType.getTitleRes(selectedNavigationItemId));
+            getSupportActionBar().setTitle(fragmentType.getTitleRes());
         } else { // The same option has been selected - fragment is not recreated but only data are reloaded.
-            if (selectedNavigationItemId == R.id.nav_today) {
+            if (fragmentType.getItemId() == R.id.nav_today) {
                 WeatherService.getInstance(this).reloadCurrentWeather(); // When selected again, it works like refresh button.
-            } else if (selectedNavigationItemId == R.id.nav_forecast) {
+            } else if (fragmentType.getItemId() == R.id.nav_forecast) {
                 WeatherService.getInstance(this).reloadForecast();
             }
         }

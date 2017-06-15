@@ -27,6 +27,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import static com.matusvanco.weather.android.service.WeatherService.WeatherServiceBroadcastType.CURRENT_WEATHER_DATA_RETURNED;
+
 /**
  * Today page after selection in side menu (or shown by default after start).
  */
@@ -87,6 +89,21 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     WeatherParameter directionParameterTextView;
 
     /**
+     * Key for storing the {@code todayFragmentTextViewsLoaded} field.
+     */
+    private static final String TODAY_FRAGMENT_TEXT_VIEWS_LOADED_KEY = "com.matusvanco.weather.android.todayFragmentTextViewsLoaded";
+
+    /**
+     * Key for storing the {@code todayPrecipitationImageLoaded} field.
+     */
+    private static final String TODAY_PRECIPITATION_IMAGE_LOADED_KEY = "com.matusvanco.weather.android.todayPrecipitationImageLoaded";
+
+    /**
+     * Constant for the conversion between mi/h and m/s.
+     */
+    private static final Double METRIC_IMPERIAL_SPEED_PARAMETER_CONVERSION_COEFFICIENT = 2.23694;
+
+    /**
      * Unbinder.
      */
     private Unbinder unbinder;
@@ -98,25 +115,19 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     private OnDataLoadedListener onDataLoadedListener;
 
     /**
-     * Constant for the conversion between mi/h and m/s.
-     */
-    private static final Double METRIC_IMPERIAL_SPEED_PARAMETER_CONVERSION_COEFFICIENT = 2.23694;
-
-    /**
      * Singleton instance.
      */
     private static TodayFragment instance; // We need only one instance.
-
-    /**
-     * True if the precipitation image has been loaded.
-     */
-    private boolean todayPrecipitationImageLoaded = false;
 
     /**
      * True if there is returned current weather data.
      */
     private boolean todayFragmentTextViewsLoaded = false;
 
+    /**
+     * True if the precipitation image has been loaded.
+     */
+    private boolean todayPrecipitationImageLoaded = false;
 
     /**
      * @return Singleton instance
@@ -135,8 +146,11 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     private BroadcastReceiver todayFragmentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            CurrentWeather currentWeather = WeatherService.getInstance(getContext()).getCurrentWeather();
-            loadCurrentWeather(currentWeather);
+            String action = intent.getAction();
+            if (action == CURRENT_WEATHER_DATA_RETURNED.getValue()) {
+                CurrentWeather currentWeather = WeatherService.getInstance(getContext()).getCurrentWeather();
+                loadCurrentWeather(currentWeather);
+            }
         }
     };
 
@@ -145,6 +159,16 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_today, container, false);
         unbinder = ButterKnife.bind(this, rootView);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(TODAY_FRAGMENT_TEXT_VIEWS_LOADED_KEY)) {
+                todayFragmentTextViewsLoaded = savedInstanceState.getBoolean(TODAY_FRAGMENT_TEXT_VIEWS_LOADED_KEY);
+            }
+
+            if (savedInstanceState.containsKey(TODAY_PRECIPITATION_IMAGE_LOADED_KEY)) {
+                todayPrecipitationImageLoaded = savedInstanceState.getBoolean(TODAY_PRECIPITATION_IMAGE_LOADED_KEY);
+            }
+        }
 
         loadEmptyWeather();
 
@@ -155,7 +179,7 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     public void onResume() {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WeatherServiceBroadcastType.CURRENT_WEATHER_DID_CHANGE.getValue());
+        intentFilter.addAction(WeatherServiceBroadcastType.CURRENT_WEATHER_DATA_RETURNED.getValue());
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(todayFragmentReceiver, intentFilter);
 
         WeatherService.getInstance(getContext()).reloadCurrentWeather(); // Must be here because we need to automatically refresh after return from Settings.
@@ -178,6 +202,14 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnDataLoadedListener");
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(TODAY_FRAGMENT_TEXT_VIEWS_LOADED_KEY, todayFragmentTextViewsLoaded);
+        outState.putBoolean(TODAY_PRECIPITATION_IMAGE_LOADED_KEY, todayPrecipitationImageLoaded);
     }
 
     @Override

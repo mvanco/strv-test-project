@@ -38,8 +38,8 @@ public class WeatherService {
      * Type of broadcast according to used service call in {@link APIInterface}.
      */
     public enum WeatherServiceBroadcastType {
-        CURRENT_WEATHER_DID_CHANGE("com.matusvanco.weather.android.currentWeatherDidChange"),
-        FORECAST_DID_CHANGE("com.matusvanco.weather.android.forecastDidChange");
+        CURRENT_WEATHER_DATA_RETURNED("com.matusvanco.weather.android.currentWeatherDataReturned"),
+        FORECAST_DATA_RETURNED("com.matusvanco.weather.android.forecastDataReturned");
 
         String value;
 
@@ -174,7 +174,7 @@ public class WeatherService {
             @Override
             public void onResponse(Call<CurrentWeather> call, Response<CurrentWeather> response) {
                 setCurrentWeather(response.body());
-                sendBroadcast(WeatherServiceBroadcastType.CURRENT_WEATHER_DID_CHANGE);
+                sendBroadcast(WeatherServiceBroadcastType.CURRENT_WEATHER_DATA_RETURNED);
             }
 
             @Override
@@ -211,7 +211,7 @@ public class WeatherService {
             @Override
             public void onResponse(Call<Forecast> call, Response<Forecast> response) {
                 setForecastItems(response.body().getList());
-                sendBroadcast(WeatherServiceBroadcastType.FORECAST_DID_CHANGE);
+                sendBroadcast(WeatherServiceBroadcastType.FORECAST_DATA_RETURNED);
             }
 
             @Override
