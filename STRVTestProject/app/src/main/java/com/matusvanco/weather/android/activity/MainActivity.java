@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -38,7 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * Main activity with side menu and toolbar which shows Today and Forecast pages as the fragments.
+ * Main activity with side menu and mToolbar which shows Today and Forecast pages as the fragments.
  */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnDataLoadedListener {
@@ -54,90 +52,38 @@ public class MainActivity extends AppCompatActivity
     private static final String FORECAST_FRAGMENT_TAG = "ForecastFragment";
 
     /**
-     * Key for the {@code selectedNavigationItemId} field.
+     * Key for the {@code mFragmentType} field.
      */
-    private static final String SELECTED_NAVIGATION_ITEM_ID_KEY = "com.matusvanco.weather.android.selectedNavigationItemId";
-
-    /**
-     * Key for the {@code fragmentType} field.
-     */
-    private static final String FRAGMENT_TYPE_KEY = "com.matusvanco.weather.android.fragmentType";
+    private static final String FRAGMENT_TYPE_KEY = "com.matusvanco.weather.android.mFragmentType";
 
     /**
      * Current settings.
      */
-    SharedPreferences preferences;
-
-    public enum MainActivityFragmentType {
-        TODAY(R.string.activity_main_drawer_today, R.id.nav_today),
-        FORECAST(R.string.activity_main_drawer_forecast, R.id.nav_forecast);
-
-        /**
-         * Int resource of fragment title.
-         */
-        final int titleRes;
-
-        /**
-         * Id of item in drawer or action bar.
-         */
-        final int itemId;
-
-        /**
-         * Default fragment type instance.
-         */
-        private static MainActivityFragmentType defaultInstance = MainActivityFragmentType.TODAY;
-
-        /**
-         * Create new instance of MainActivityFragmentType from item id.
-         * @param itemId Which item id is used for creation
-         * @return Instance of {@link MainActivityFragmentType}
-         */
-        public static MainActivityFragmentType fromItemId(@IdRes int itemId) {
-            for (MainActivityFragmentType fragmentType : MainActivityFragmentType.values()) {
-                if (fragmentType.itemId == itemId) {
-                    return fragmentType;
-                }
-            }
-            return defaultInstance;
-        }
-
-        MainActivityFragmentType(@StringRes int titleRes, @IdRes int itemId) {
-            this.titleRes = titleRes;
-            this.itemId = itemId;
-        }
-
-        public int getTitleRes() {
-            return titleRes;
-        }
-
-        public int getItemId() {
-            return itemId;
-        }
-    }
+    SharedPreferences mPreferences;
 
     /**
      * Upper color bar with the title.
      */
     @BindView(R.id.activity_main_toolbar)
-    Toolbar toolbar;
+    Toolbar mToolbar;
 
     /**
      * Layout for the side menu.
      */
     @BindView(R.id.activity_main_drawer_layout)
-    DrawerLayout drawer;
+    DrawerLayout mDrawer;
 
     /**
-     * Side menu which is animated as drawer.
+     * Side menu which is animated as mDrawer.
      */
     @BindView(R.id.activity_main_nav_view)
-    NavigationView navigationView;
+    NavigationView mNavigationView;
 
     /**
      * Infinite horizontal progress bar below the ActionBar.
      */
     @BindView(R.id.activity_main_content_progress_bar)
-    ProgressBar progressBar;
+    ProgressBar mProgressBar;
 
     /**
      * Unbinder for {@link ButterKnife}
@@ -152,17 +98,17 @@ public class MainActivity extends AppCompatActivity
     /**
      * Type of fragment which should be currently shown.
      */
-    private MainActivityFragmentType fragmentType = MainActivityFragmentType.TODAY;
+    private MainActivityFragmentType mFragmentType = MainActivityFragmentType.TODAY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mUnbinder = ButterKnife.bind(this);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         setupActionBar();
 
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         /**
          * Set Today screen as inital content of this activity.
@@ -175,10 +121,10 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.commit();
         } else {
             if (savedInstanceState.containsKey(FRAGMENT_TYPE_KEY)) {
-                fragmentType = MainActivityFragmentType.values()[savedInstanceState.getInt(FRAGMENT_TYPE_KEY)];
+                mFragmentType = MainActivityFragmentType.values()[savedInstanceState.getInt(FRAGMENT_TYPE_KEY)];
             }
         }
-        getSupportActionBar().setTitle(fragmentType.getTitleRes());
+        getSupportActionBar().setTitle(mFragmentType.getTitleRes());
 
         showInfiniteHorizontalProgressBar(); // I am still waiting for loading data.
     }
@@ -187,7 +133,7 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(FRAGMENT_TYPE_KEY, fragmentType.ordinal());
+        outState.putInt(FRAGMENT_TYPE_KEY, mFragmentType.ordinal());
     }
 
     @Override
@@ -237,31 +183,31 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        if (fragmentType.getItemId() != item.getItemId()) { // Different option than already shown has been selected.
-            fragmentType = MainActivityFragmentType.fromItemId(item.getItemId());
+        if (mFragmentType.getItemId() != item.getItemId()) { // Different option than already shown has been selected.
+            mFragmentType = MainActivityFragmentType.fromItemId(item.getItemId());
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            if (fragmentType.getItemId() == R.id.nav_today) {
-                fragmentType = MainActivityFragmentType.TODAY;
+            if (mFragmentType.getItemId() == R.id.nav_today) {
+                mFragmentType = MainActivityFragmentType.TODAY;
                 fragmentTransaction.replace(R.id.activity_main_content_fragment_container, TodayFragment.getInstance(), TODAY_FRAGMENT_TAG);
-            } else if (fragmentType.getItemId() == R.id.nav_forecast) {
-                fragmentType = MainActivityFragmentType.FORECAST;
+            } else if (mFragmentType.getItemId() == R.id.nav_forecast) {
+                mFragmentType = MainActivityFragmentType.FORECAST;
                 fragmentTransaction.replace(R.id.activity_main_content_fragment_container, ForecastFragment.getInstance(), FORECAST_FRAGMENT_TAG);
             }
             fragmentTransaction.commit();
-            getSupportActionBar().setTitle(fragmentType.getTitleRes());
+            getSupportActionBar().setTitle(mFragmentType.getTitleRes());
         } else { // The same option has been selected - fragment is not recreated but only data are reloaded.
-            if (fragmentType.getItemId() == R.id.nav_today) {
+            if (mFragmentType.getItemId() == R.id.nav_today) {
                 WeatherService.getInstance(this).reloadCurrentWeather(); // When selected again, it works like refresh button.
-            } else if (fragmentType.getItemId() == R.id.nav_forecast) {
+            } else if (mFragmentType.getItemId() == R.id.nav_forecast) {
                 WeatherService.getInstance(this).reloadForecast();
             }
         }
 
         showInfiniteHorizontalProgressBar();
 
-        drawer.closeDrawer(GravityCompat.START);
+        mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -271,12 +217,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupActionBar() {
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
 
         mToggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(mToggle);
-        drawer.setScrimColor(Color.TRANSPARENT);
+                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(mToggle);
+        mDrawer.setScrimColor(Color.TRANSPARENT);
         mToggle.syncState();
     }
 
@@ -314,13 +260,13 @@ public class MainActivity extends AppCompatActivity
      * Shows horizontal progress bar.
      */
     private void showInfiniteHorizontalProgressBar() {
-        progressBar.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     /**
      * Hide horizontal progress bar.
      */
     private void hideInfiniteHorizontalProgerssBar() {
-        progressBar.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 }

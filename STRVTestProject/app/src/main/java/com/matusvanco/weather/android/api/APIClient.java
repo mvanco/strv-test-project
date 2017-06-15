@@ -10,8 +10,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class APIClient {
 
+    /**
+     * Base URL for loading weather data from OpenWeatherMap.
+     */
     public static final String BASE_URL = "http://api.openweathermap.org";
 
+    /**
+     * @return Instance of {@link Retrofit} which is used to create client with interface {@link APIInterface}
+     */
     public static Retrofit getClient() {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();

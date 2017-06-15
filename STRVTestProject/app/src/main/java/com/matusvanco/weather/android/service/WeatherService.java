@@ -22,7 +22,6 @@ import com.matusvanco.weather.android.entity.TemperatureUnit;
 import com.matusvanco.weather.android.fragment.SettingsFragment;
 
 import java.util.List;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,33 +32,6 @@ import retrofit2.Response;
  * receivers.
  */
 public class WeatherService {
-
-    /**
-     * Type of broadcast according to used service call in {@link APIInterface}.
-     */
-    public enum WeatherServiceBroadcastType {
-        CURRENT_WEATHER_DATA_RETURNED("com.matusvanco.weather.android.currentWeatherDataReturned"),
-        FORECAST_DATA_RETURNED("com.matusvanco.weather.android.forecastDataReturned");
-
-        String value;
-
-        WeatherServiceBroadcastType(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public static WeatherServiceBroadcastType fromValue(String value) {
-            for (WeatherServiceBroadcastType type : WeatherServiceBroadcastType.values()) {
-                if (type.getValue().equals(value)) {
-                    return type;
-                }
-            }
-            throw new IllegalArgumentException(String.format(Locale.ENGLISH, "Unknown OffersServiceBroadcastType %s.", value));
-        }
-    }
 
     /**
      * Base URL for loading images from OpenWeatherMap.
@@ -92,52 +64,39 @@ public class WeatherService {
     private static final String QUERY_PARAMETER_APP_ID = "1c8254bc0e4c06431648f7aa6d641537";
 
     /**
+     * Singleton sInstance.
+     */
+    private static WeatherService sInstance;
+
+    /**
      * Current weather.
      */
-    private CurrentWeather currentWeather;
+    private CurrentWeather mCurrentWeather;
 
     /**
      * Forecast
      */
-    private List<ForecastItem> forecastItems;
+    private List<ForecastItem> mForecastItems;
 
     /**
      * Current settings.
      */
-    SharedPreferences preferences;
-
-    /**
-     * Singleton instance.
-     */
-    private static WeatherService instance;
+    private SharedPreferences mPreferences;
 
     /**
      * Application context.
      */
-    private Context appContext;
+    private Context mAppContext;
 
     /**
      * Lenght unit.
      */
-    private LengthUnit lengthUnit;
+    private LengthUnit mLengthUnit;
 
     /**
      * Temperature unit.
      */
-    private TemperatureUnit temperatureUnit;
-
-    /**
-     * Returns singleton {@link WeatherService} instance. It is created if it does not exist yet.
-     *
-     * @param context Context
-     * @return singleton {@link WeatherService} instance
-     */
-    public static synchronized WeatherService getInstance(Context context) {
-        if (instance == null) {
-            instance = new WeatherService(context);
-        }
-        return instance;
-    }
+    private TemperatureUnit mTemperatureUnit;
 
     /**
      * Private constructor to prevent unwanted instantiation.
@@ -145,18 +104,22 @@ public class WeatherService {
      * @param context Context
      */
     private WeatherService(Context context) {
-        this.appContext = context.getApplicationContext();
-        this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.mAppContext = context.getApplicationContext();
+        this.mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         loadCurrentSettings();
     }
 
     /**
-     * Get current weather if it has been already obtained from server and previously queried using {@code reloadCurrentWeather} metod.
+     * Returns singleton {@link WeatherService} sInstance. It is created if it does not exist yet.
      *
-     * @return {@link CurrentWeather} instance with current weather
+     * @param context Context
+     * @return singleton {@link WeatherService} sInstance
      */
-    public CurrentWeather getCurrentWeather() {
-        return currentWeather;
+    public static synchronized WeatherService getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new WeatherService(context);
+        }
+        return sInstance;
     }
 
     /**
@@ -166,7 +129,7 @@ public class WeatherService {
         APIInterface client = APIClient.getClient().create(APIInterface.class);
         Call<CurrentWeather> currentWeatherCall = client.getCurrentWeather(
                 QUERY_PARAMETER_CITY,
-                getWeatherServiceUnits().getTitle(appContext),
+                getWeatherServiceUnits().getTitle(mAppContext),
                 QUERY_PARAMETER_CURRENT_WEATHER_COUNT,
                 QUERY_PARAMETER_APP_ID);
 
@@ -186,24 +149,22 @@ public class WeatherService {
     }
 
     /**
-     * Get forecast if it has been already obtained from server and previously queried using {@code reloadForecast} metod.
+     * Get current weather if it has been already obtained from server and previously queried using {@code reloadCurrentWeather} metod.
      *
-     * @return {@link List<ForecastItem>} instance with forecast for each day
+     * @return {@link CurrentWeather} sInstance with current weather
      */
-    public List<ForecastItem> getForecastItems() {
-        return forecastItems;
+    public CurrentWeather getCurrentWeather() {
+        return mCurrentWeather;
     }
 
     /**
      * Start the query on the server to load data about forecast.
      */
     public void reloadForecast() {
-        loadCurrentSettings();
-
         APIInterface client = APIClient.getClient().create(APIInterface.class);
         Call<Forecast> forecastCall = client.getForecast(
                 QUERY_PARAMETER_CITY,
-                getWeatherServiceUnits().getTitle(appContext),
+                getWeatherServiceUnits().getTitle(mAppContext),
                 QUERY_PARAMETER_FORECAST_COUNT,
                 QUERY_PARAMETER_APP_ID);
 
@@ -219,6 +180,15 @@ public class WeatherService {
                 // Nothing to do here so far.
             }
         });
+    }
+
+    /**
+     * Get forecast if it has been already obtained from server and previously queried using {@code reloadForecast} metod.
+     *
+     * @return {@link List<ForecastItem>} sInstance with forecast for each day
+     */
+    public List<ForecastItem> getForecastItems() {
+        return mForecastItems;
     }
 
     /**
@@ -248,15 +218,29 @@ public class WeatherService {
     }
 
     /**
+     * @return Loaded length unit
+     */
+    public LengthUnit getLengthUnit() {
+        return mLengthUnit;
+    }
+
+    /**
+     * @return Loaded temperature unit.
+     */
+    public TemperatureUnit getTemperatureUnit() {
+        return mTemperatureUnit;
+    }
+
+    /**
      * @return Current weather server units according to current settings (metric or imperial).
      */
     private WeatherServiceUnits getWeatherServiceUnits() {
         loadCurrentSettings();
 
         WeatherServiceUnits units = WeatherServiceUnits.DEFAULT_INSTANCE;
-        if (temperatureUnit == TemperatureUnit.CELSIUS) {
+        if (mTemperatureUnit == TemperatureUnit.CELSIUS) {
             units = WeatherServiceUnits.METRIC;
-        } else if (temperatureUnit == TemperatureUnit.FAHRENHEIT) {
+        } else if (mTemperatureUnit == TemperatureUnit.FAHRENHEIT) {
             units = WeatherServiceUnits.IMPERIAL;
         }
         return units;
@@ -266,30 +250,16 @@ public class WeatherService {
      * Loads current settings from {@link SharedPreferences}.
      */
     private void loadCurrentSettings() {
-        String lengthUnitPreference = preferences.getString(
+        String lengthUnitPreference = mPreferences.getString(
                 SettingsFragment.LENGTH_LIST_PREFERENCE_KEY,
-                LengthUnit.DEFAULT_INSTANCE.getTitle(appContext));
-        lengthUnit = LengthUnit.fromTitle(appContext, lengthUnitPreference);
+                LengthUnit.DEFAULT_INSTANCE.getTitle(mAppContext));
+        mLengthUnit = LengthUnit.fromTitle(mAppContext, lengthUnitPreference);
 
-        String temperatureUnitPreference  = preferences.getString(
+        String temperatureUnitPreference  = mPreferences.getString(
                 SettingsFragment.TEMPERATURE_LIST_PREFERENCE_KEY,
-                TemperatureUnit.DEFAULT_INSTANCE.getTitle(appContext));
+                TemperatureUnit.DEFAULT_INSTANCE.getTitle(mAppContext));
 
-        temperatureUnit = TemperatureUnit.fromTitle(appContext, temperatureUnitPreference);
-    }
-
-    /**
-     * @return Loaded length unit
-     */
-    public LengthUnit getLengthUnit() {
-        return lengthUnit;
-    }
-
-    /**
-     * @return Loaded temperature unit.
-     */
-    public TemperatureUnit getTemperatureUnit() {
-        return temperatureUnit;
+        mTemperatureUnit = TemperatureUnit.fromTitle(mAppContext, temperatureUnitPreference);
     }
 
     /**
@@ -299,24 +269,24 @@ public class WeatherService {
      */
     private void sendBroadcast(WeatherServiceBroadcastType weatherServiceBroadcastType) {
         Intent intent = new Intent(weatherServiceBroadcastType.getValue());
-        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(mAppContext).sendBroadcast(intent);
     }
 
     /**
      * Stores curently loaded current weather into field for future use.
      *
-     * @param currentWeather {@link CurrentWeather} instance
+     * @param currentWeather {@link CurrentWeather} sInstance
      */
     private void setCurrentWeather(CurrentWeather currentWeather) {
-        this.currentWeather = currentWeather;
+        this.mCurrentWeather = currentWeather;
     }
 
     /**
      * Stores curently loaded forecast into field for future use.
      *
-     * @param forecastItems {@link List<ForecastItem>} instance
+     * @param forecastItems {@link List<ForecastItem>} sInstance
      */
     private void setForecastItems(List<ForecastItem> forecastItems) {
-        this.forecastItems = forecastItems;
+        this.mForecastItems = forecastItems;
     }
 }

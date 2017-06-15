@@ -29,29 +29,55 @@ import butterknife.ButterKnife;
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder> implements OnPrecipitationIconLoadedListener {
 
     /**
-     * This is used for Glide to handle fragment states.
+     * This is used for Glide to handle mFragment states.
      */
-    private Fragment fragment;
+    private Fragment mFragment;
 
     /**
      * Items which are shown byt this adapter.
      */
-    private List<ForecastItem> forecastItems;
+    private List<ForecastItem> mForecastItems;
 
     /**
      * Temperature unit according to which the content is adapted.
      */
-    private TemperatureUnit temperatureUnit;
+    private TemperatureUnit mTemperatureUnit;
 
     /**
      * Raised when there is recognized new image to be load.
      */
-    private OnAddPrecipitationIconToLoadListener onAddPrecipitationIconToLoad;
+    private OnAddPrecipitationIconToLoadListener mOnAddPrecipitationIconToLoadListener;
 
     /**
      * Raised when there is loaded one more image.
      */
     private OnPrecipitationIconLoadedListener onPrecipitationIconLoaded;
+
+    /**
+     * Shows forecast for 7 days, starting from tomorrow. Parent mFragment which holds this adapter
+     * must implement {@code OnAddPrecipitationIconToLoadListener} and {@code OnPrecipitationIconLoadedListener}
+     * in order to handle progress bar properly.
+     * @param fragment Parent framgent which uses this adapter
+     * @param forecastItems Set of forecast items to be shown
+     * @param temperatureUnit Temperature unit (°C or °F) to be used in print
+     */
+    public ForecastAdapter(Fragment fragment, List<ForecastItem> forecastItems, TemperatureUnit temperatureUnit) {
+        this.mFragment = fragment;
+        this.mForecastItems = forecastItems;
+        this.mTemperatureUnit = temperatureUnit;
+
+        try {
+            this.onPrecipitationIconLoaded = (OnPrecipitationIconLoadedListener) fragment;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(fragment.toString() + " must implement OnPrecipitationIconLoadedListener");
+        }
+
+        try {
+            this.mOnAddPrecipitationIconToLoadListener = (OnAddPrecipitationIconToLoadListener) fragment;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(fragment.toString() + " must implement OnAddPrecipitationIconToLoadListener");
+        }
+    }
 
     public class ForecastViewHolder extends RecyclerView.ViewHolder {
 
@@ -71,32 +97,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         }
     }
 
-    /**
-     * Shows forecast for 7 days, starting from tomorrow. Parent fragment which holds this adapter
-     * must implement {@code OnAddPrecipitationIconToLoadListener} and {@code OnPrecipitationIconLoadedListener}
-     * in order to handle progress bar properly.
-     * @param fragment Parent framgent which uses this adapter
-     * @param forecastItems Set of forecast items to be shown
-     * @param temperatureUnit Temperature unit (°C or °F) to be used in print
-     */
-    public ForecastAdapter(Fragment fragment, List<ForecastItem> forecastItems, TemperatureUnit temperatureUnit) {
-        this.fragment = fragment;
-        this.forecastItems = forecastItems;
-        this.temperatureUnit = temperatureUnit;
-
-        try {
-            this.onPrecipitationIconLoaded = (OnPrecipitationIconLoadedListener) fragment;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(fragment.toString() + " must implement OnPrecipitationIconLoadedListener");
-        }
-
-        try {
-            this.onAddPrecipitationIconToLoad = (OnAddPrecipitationIconToLoadListener) fragment;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(fragment.toString() + " must implement OnAddPrecipitationIconToLoadListener");
-        }
-    }
-
+    @Override
     public ForecastViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_forecast_row_item, parent, false);
         return new ForecastViewHolder(itemView);
@@ -104,16 +105,16 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     @Override
     public void onBindViewHolder(ForecastViewHolder holder, int position) {
-        ForecastItem forecastItem = forecastItems.get(position);
-        onAddPrecipitationIconToLoad.onAddPrecipitationIconToLoad();
-        WeatherService.getInstance(fragment.getContext()).loadPrecipitationImage(fragment, forecastItem.getWeather().get(0).getIcon(), holder.icon, this);
+        ForecastItem forecastItem = mForecastItems.get(position);
+        mOnAddPrecipitationIconToLoadListener.onAddPrecipitationIconToLoad();
+        WeatherService.getInstance(mFragment.getContext()).loadPrecipitationImage(mFragment, forecastItem.getWeather().get(0).getIcon(), holder.icon, this);
         holder.mainWeather.setText(getLongWeatherText(forecastItem.getWeather().get(0).getMain(), position));
-        holder.temperature.setText(forecastItem.getTemp().getFormattedTemp(temperatureUnit, true));
+        holder.temperature.setText(forecastItem.getTemp().getFormattedTemp(mTemperatureUnit, true));
     }
 
     @Override
     public int getItemCount() {
-        return forecastItems.size();
+        return mForecastItems.size();
     }
 
     @Override
@@ -133,13 +134,13 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         Date date = calendar.getTime();
         String dayOfTheWeek = dateFormat.format(date);
 
-        String preposition = fragment.getString(R.string.fragment_forecast_row_item_preposition);
+        String preposition = mFragment.getString(R.string.fragment_forecast_row_item_preposition);
 
         return String.format("%s %s %s", weatherText, preposition, dayOfTheWeek);
     }
 
     public void setForecastItems(List<ForecastItem> forecastItems, TemperatureUnit temperatureUnit) {
-        this.forecastItems = forecastItems;
-        this.temperatureUnit = temperatureUnit;
+        this.mForecastItems = forecastItems;
+        this.mTemperatureUnit = temperatureUnit;
     }
 }
