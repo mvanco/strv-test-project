@@ -57,8 +57,7 @@ public class MainActivity extends AppCompatActivity
 
     public enum MainActivityFragmentType {
         TODAY(R.string.activity_main_drawer_today, R.id.nav_today),
-        FORECAST(R.string.activity_main_drawer_forecast, R.id.nav_forecast),
-        SETTINGS(R.string.action_settings, R.id.action_settings);
+        FORECAST(R.string.activity_main_drawer_forecast, R.id.nav_forecast);
 
         /**
          * Int resource of fragment title.
@@ -92,19 +91,25 @@ public class MainActivity extends AppCompatActivity
     /**
      * Upper color bar with the title.
      */
-    @BindView(R.id.toolbar)
+    @BindView(R.id.activity_main_toolbar)
     Toolbar toolbar;
 
     /**
      * Layout for the side menu.
      */
-    @BindView(R.id.drawer_layout)
+    @BindView(R.id.activity_main_drawer_layout)
     DrawerLayout drawer;
 
-    @BindView(R.id.nav_view)
+    /**
+     * Side menu which is animated as drawer.
+     */
+    @BindView(R.id.activity_main_nav_view)
     NavigationView navigationView;
 
-    @BindView(R.id.app_bar_main_progressbar)
+    /**
+     * Infinite horizontal progress bar below the ActionBar.
+     */
+    @BindView(R.id.activity_main_content_progress_bar)
     ProgressBar progressBar;
 
     /**
@@ -112,8 +117,14 @@ public class MainActivity extends AppCompatActivity
      */
     private Unbinder mUnbinder;
 
+    /**
+     * Handles synchronization between ActionBar hamburger button and side menu.
+     */
     private ActionBarDrawerToggle mToggle;
 
+    /**
+     * Id of currently selected navigation item.
+     */
     private int selectedNavigationItemId;
 
     @Override
@@ -121,19 +132,21 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mUnbinder = ButterKnife.bind(this);
-
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         setupActionBar();
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        /**
+         * Set Today screen as inital content of this activity.
+         */
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         TodayFragment todayTodayFragment = TodayFragment.getInstance();
-        fragmentTransaction.add(R.id.fragment_container, todayTodayFragment, TODAY_FRAGMENT_TAG);
+        fragmentTransaction.add(R.id.activity_main_content_fragment_container, todayTodayFragment, TODAY_FRAGMENT_TAG);
         fragmentTransaction.commit();
         getSupportActionBar().setTitle(MainActivityFragmentType.TODAY.getTitleRes());
+
         showInfiniteHorizontalProgressBar(); // I am still waiting for loading data.
     }
 
@@ -145,7 +158,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -155,32 +168,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(SettingsActivity.newIntent(this));
             return true;
         } else if (id == R.id.action_about) {
             getAboutDialog().show();
-        } else if (id == android.R.id.home) {
-//            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//            transaction.replace(R.id.fragment_container, TodayFragment.newInstance(), TODAY_FRAGMENT_TAG);
-//            transaction.commit();
-//            getSupportActionBar().setTitle(MainActivityFragmentType.TODAY.getTitleRes());
-//            Log.d("MainActivity", "Clicked back arrow");
-            onBackPressed(); // Default behaviour.
-            return true;
         }
 
         Log.d("MainActivity", "Clicked some of options items");
@@ -197,25 +197,26 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        if (selectedNavigationItemId != item.getItemId()) {
+        if (selectedNavigationItemId != item.getItemId()) { // Different option than already shown has been selected.
             selectedNavigationItemId = item.getItemId();
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             if (selectedNavigationItemId == R.id.nav_today) {
-                fragmentTransaction.replace(R.id.fragment_container, TodayFragment.getInstance(), TODAY_FRAGMENT_TAG);
+                fragmentTransaction.replace(R.id.activity_main_content_fragment_container, TodayFragment.getInstance(), TODAY_FRAGMENT_TAG);
             } else if (selectedNavigationItemId == R.id.nav_forecast) {
-                fragmentTransaction.replace(R.id.fragment_container, ForecastFragment.getInstance(), FORECAST_FRAGMENT_TAG);
+                fragmentTransaction.replace(R.id.activity_main_content_fragment_container, ForecastFragment.getInstance(), FORECAST_FRAGMENT_TAG);
             }
             fragmentTransaction.commit();
             getSupportActionBar().setTitle(MainActivityFragmentType.getTitleRes(selectedNavigationItemId));
-        } else {
+        } else { // The same option has been selected - fragment is not recreated but only data are reloaded.
             if (selectedNavigationItemId == R.id.nav_today) {
                 WeatherService.getInstance(this).reloadCurrentWeather(); // When selected again, it works like refresh button.
             } else if (selectedNavigationItemId == R.id.nav_forecast) {
-                // TODO call appropriate function
+                WeatherService.getInstance(this).reloadForecast();
             }
         }
+
         showInfiniteHorizontalProgressBar();
 
         drawer.closeDrawer(GravityCompat.START);

@@ -5,7 +5,7 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
 
-    <dimen name="app_bar_main_progressbar_top_margin">-6dp</dimen>
+    <dimen name="activity_main_content_progress_bar_top_margin">-6dp</dimen>
 
     <dimen name="dialog_about_message_text_size">20dp</dimen>
     <dimen name="dialog_about_message_top_padding">10dp</dimen>

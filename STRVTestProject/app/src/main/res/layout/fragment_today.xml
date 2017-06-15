@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/fragment_today_weather_parameters"
-        android:src="@drawable/brno"
         android:scaleType="centerCrop"
-        />
+        android:src="@drawable/brno" />
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="@dimen/fragment_today_gradient_rectangle_background_height"
@@ -27,8 +27,7 @@
         android:layout_marginLeft="@dimen/fragment_today_horizontal_padding"
         android:layout_marginBottom="@dimen/fragment_today_city_bottom_margin"
         style="@style/TodayFragmentText.City"
-        tools:text="Brno"
-        />
+        tools:text="Brno" />
 
     <LinearLayout
         android:id="@id/fragment_today_precipitation"
@@ -63,9 +62,7 @@
             android:id="@+id/fragment_today_precipitation_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TodayFragmentText.PrecipitationText"
-            tools:text="Light Rain"
-            />
+            style="@style/TodayFragmentText.PrecipitationText" />
 
     </LinearLayout>
 
@@ -77,9 +74,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/fragment_today_temperature_bottom_margin"
         android:layout_marginRight="@dimen/fragment_today_horizontal_padding"
-        style="@style/TodayFragmentText.Temperature"
-        tools:text="27~C"
-        />
+        style="@style/TodayFragmentText.Temperature" />
 
     <android.support.v7.widget.GridLayout
         android:id="@id/fragment_today_weather_parameters"
@@ -90,9 +85,7 @@
         android:layout_marginBottom="@dimen/fragment_today_weather_parameters_bottom_margin"
         android:layout_marginLeft="@dimen/fragment_today_horizontal_padding"
         android:layout_marginRight="@dimen/fragment_today_horizontal_padding"
-        app:columnCount="3"
-
-        >
+        app:columnCount="3">
 
         <com.matusvanco.weather.android.view.WeatherParameter
             android:id="@+id/fragment_today_weather_parameter_humidity"

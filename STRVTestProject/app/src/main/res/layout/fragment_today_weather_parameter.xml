@@ -2,13 +2,13 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
-        android:id="@+id/custom_view_weather_parameter_icon"
+        android:id="@+id/fragment_today_weather_parameter_icon"
         android:layout_width="@dimen/custom_view_weather_parameter_icon_size"
         android:layout_height="@dimen/custom_view_weather_parameter_icon_size"
         android:layout_marginEnd="@dimen/custom_view_weather_parameter_icon_end_margin"/>
 
     <TextView
-        android:id="@+id/custom_view_weather_parameter_text"
+        android:id="@+id/fragment_today_weather_parameter_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_primary">#3F51B5</color>
-    <color name="color_primary_dark">#303F9F</color>
+    <color name="color_primary">#2196f3</color>
+    <color name="color_primary_dark">#145991</color>
     <color name="color_accent">#2196f3</color>
     <color name="dialog_about_messaage_text_color">#6d6d6d</color>
     <color name="precipitation_oval_grey">#808384</color>

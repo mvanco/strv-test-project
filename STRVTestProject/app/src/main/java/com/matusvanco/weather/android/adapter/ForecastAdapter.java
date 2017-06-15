@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.entity.ForecastItem;
 import com.matusvanco.weather.android.entity.TemperatureUnit;
+import com.matusvanco.weather.android.service.OnAddPrecipitationIconToLoadListener;
 import com.matusvanco.weather.android.service.OnPrecipitationIconLoadedListener;
 import com.matusvanco.weather.android.service.WeatherService;
 
@@ -36,7 +37,9 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     private TemperatureUnit temperatureUnit;
 
-    private OnPrecipitationIconLoadedListener callback;
+    private OnPrecipitationIconLoadedListener onPrecipitationIconLoaded;
+
+    private OnAddPrecipitationIconToLoadListener onAddPrecipitationIconToLoad;
 
     public class ForecastViewHolder extends RecyclerView.ViewHolder {
 
@@ -60,7 +63,18 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         this.fragment = fragment;
         this.forecastItems = forecastItems;
         this.temperatureUnit = temperatureUnit;
-        this.callback = callback;
+
+        try {
+            this.onPrecipitationIconLoaded = (OnPrecipitationIconLoadedListener) fragment;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(fragment.toString() + " must implement OnPrecipitationIconLoadedListener");
+        }
+
+        try {
+            this.onAddPrecipitationIconToLoad = (OnAddPrecipitationIconToLoadListener) fragment;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(fragment.toString() + " must implement OnAddPrecipitationIconToLoadListener");
+        }
     }
 
     public ForecastViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -71,6 +85,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     @Override
     public void onBindViewHolder(ForecastViewHolder holder, int position) {
         ForecastItem forecastItem = forecastItems.get(position);
+        onAddPrecipitationIconToLoad.onAddPrecipitationIconToLoad();
         WeatherService.getInstance(fragment.getContext()).loadPrecipitationImage(fragment, forecastItem.getWeather().get(0).getIcon(), holder.icon, this);
         holder.mainWeather.setText(getLongWeatherText(forecastItem.getWeather().get(0).getMain(), position));
         holder.temperature.setText(forecastItem.getTemp().getFormattedTemp(temperatureUnit, true));
@@ -83,7 +98,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     @Override
     public void onPrecipitationIconLoaded() {
-        callback.onPrecipitationIconLoaded(); // Delegation to upper Fragment.
+        onPrecipitationIconLoaded.onPrecipitationIconLoaded(); // Delegation to upper Fragment.
     }
 
     private String getLongWeatherText(String weatherText, int position) {

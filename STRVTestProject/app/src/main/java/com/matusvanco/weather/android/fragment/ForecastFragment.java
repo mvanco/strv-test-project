@@ -16,13 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.adapter.ForecastAdapter;
 import com.matusvanco.weather.android.entity.ForecastItem;
 import com.matusvanco.weather.android.entity.TemperatureUnit;
+import com.matusvanco.weather.android.service.OnAddPrecipitationIconToLoadListener;
 import com.matusvanco.weather.android.service.OnPrecipitationIconLoadedListener;
 import com.matusvanco.weather.android.service.WeatherService;
 
@@ -37,7 +36,7 @@ import butterknife.Unbinder;
  * Created by matva on 6/8/2017.
  */
 
-public class ForecastFragment extends Fragment implements OnPrecipitationIconLoadedListener {
+public class ForecastFragment extends Fragment implements OnPrecipitationIconLoadedListener, OnAddPrecipitationIconToLoadListener {
 
     private static ForecastFragment instance;
 
@@ -49,11 +48,11 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
 
     private List<ForecastItem> mForecastItems = new ArrayList<>();
 
-    private int forecastPrecipitationIconsLoaded = 0;
+    private int forecastPrecipitationIconsToLoad = 0;
 
     private boolean forecastFragmentItemsLoaded = false;
 
-    @BindView(R.id.recycler_view)
+    @BindView(R.id.fragment_forecast_recycler_view)
     RecyclerView recyclerView;
 
     /**
@@ -132,8 +131,7 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         try {
             mCallback = (OnDataLoadedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnDataLoadedListener");
+            throw new ClassCastException(context.toString() + " must implement OnDataLoadedListener");
         }
     }
 
@@ -155,16 +153,21 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
 
     @Override
     public void onPrecipitationIconLoaded() {
-        forecastPrecipitationIconsLoaded++;
-        Log.d("ForecastFragment", "Image is loaded, so far " + forecastPrecipitationIconsLoaded + " totally");
+        forecastPrecipitationIconsToLoad--;
+        Log.d("ForecastFragment", "Image is loaded, " + forecastPrecipitationIconsToLoad + " to load");
         if (isDataLoaded()) {
             mCallback.onDataLoaded();
         }
     }
 
+    @Override
+    public void onAddPrecipitationIconToLoad() {
+        forecastPrecipitationIconsToLoad++;
+        Log.d("ForecastFragment", "New image to load, totally " + forecastPrecipitationIconsToLoad);
+    }
+
     private boolean isDataLoaded() {
-        //return (forecastPrecipitationIconsLoaded == mForecastItems.size()) && forecastFragmentItemsLoaded;
-        return forecastFragmentItemsLoaded;
+        return (forecastPrecipitationIconsToLoad == 0) && forecastFragmentItemsLoaded;
     }
 
     /**
@@ -175,5 +178,4 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         this.mForecastItems.clear();
         this.mForecastItems.addAll(forecastItems);
     }
-
 }

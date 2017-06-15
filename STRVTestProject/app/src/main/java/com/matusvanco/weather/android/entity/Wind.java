@@ -26,6 +26,11 @@ public class Wind {
     }
 
     public String getTextDeg() {
+        try {
+            double doubleDeg = deg.doubleValue();
+        } catch (NullPointerException e) {
+            return "-";
+        }
         if (deg > 0 && deg < 23) {
             return "N";
         } else if (deg < 68) {

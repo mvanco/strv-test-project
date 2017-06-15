@@ -23,10 +23,10 @@ import butterknife.ButterKnife;
 
 public class WeatherParameter extends LinearLayout {
 
-    @BindView(R.id.custom_view_weather_parameter_icon)
+    @BindView(R.id.fragment_today_weather_parameter_icon)
     ImageView imageView;
 
-    @BindView(R.id.custom_view_weather_parameter_text)
+    @BindView(R.id.fragment_today_weather_parameter_text)
     TextView textView;
 
     /**
