@@ -7,11 +7,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.entity.CurrentWeather;
@@ -28,50 +28,99 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * Created by matva on 6/8/2017.
+ * Today page after selection in side menu (or shown by default after start).
  */
-
 public class TodayFragment extends android.support.v4.app.Fragment implements OnPrecipitationIconLoadedListener {
 
+    /**
+     * City name.
+     */
     @BindView(R.id.fragment_today_city)
-    AppCompatTextView cityTextView;
+    TextView cityTextView;
 
+    /**
+     * Image of current weather.
+     */
     @BindView(R.id.fragment_today_precipitation_icon)
-    AppCompatImageView precipitationImageView;
+    ImageView precipitationImageView;
 
+    /**
+     * Weather text describing briefly weather condition.
+     */
     @BindView(R.id.fragment_today_precipitation_text)
-    AppCompatTextView precipitationTextView;
+    TextView precipitationTextView;
 
+    /**
+     * Temperature.
+     */
     @BindView(R.id.fragment_today_temperature)
-    AppCompatTextView temperatureTextView;
+    TextView temperatureTextView;
 
+    /**
+     * Humidity parameter.
+     */
     @BindView(R.id.fragment_today_weather_parameter_humidity)
     WeatherParameter humidityParameterTextView;
 
+    /**
+     * Precipitation parameter.
+     */
     @BindView(R.id.fragment_today_weather_parameter_precipitation)
     WeatherParameter precipitationParameterTextView;
 
+    /**
+     * Pressure parameter.
+     */
     @BindView(R.id.fragment_today_weather_parameter_pressure)
     WeatherParameter pressureParameterTextView;
 
+    /**
+     * Wind parameter.
+     */
     @BindView(R.id.fragment_today_weather_parameter_wind)
     WeatherParameter windParameterTextView;
 
+    /**
+     * Direction parameter.
+     */
     @BindView(R.id.fragment_today_weather_parameter_direction)
     WeatherParameter directionParameterTextView;
 
+    /**
+     * Unbinder.
+     */
     private Unbinder unbinder;
 
-    private OnDataLoadedListener mCallback;
+    /**
+     * Callback for the event where data of fragment are fully loaded after {@code reloadCurrentWeather()}
+     * on {@link WeatherService} has been called (it is also called by default during fragment creation).
+     */
+    private OnDataLoadedListener onDataLoadedListener;
 
+    /**
+     * Constant for the conversion between mi/h and m/s.
+     */
     private static final Double METRIC_IMPERIAL_SPEED_PARAMETER_CONVERSION_COEFFICIENT = 2.23694;
 
+    /**
+     * Singleton instance.
+     */
     private static TodayFragment instance; // We need only one instance.
 
+    /**
+     * True if the precipitation image has been loaded.
+     */
     private boolean todayPrecipitationImageLoaded = false;
+
+    /**
+     * True if there is returned current weather data.
+     */
     private boolean todayFragmentTextViewsLoaded = false;
 
 
+    /**
+     * @return Singleton instance
+     */
     public static TodayFragment getInstance() {
         if (instance == null) {
             instance = new TodayFragment();
@@ -96,18 +145,10 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_today, container, false);
         unbinder = ButterKnife.bind(this, rootView);
+
+        loadEmptyWeather();
+
         return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        loadEmptyCurrentWeater();
-
-
-
-        WeatherService.getInstance(getContext()).reloadCurrentWeather();
     }
 
     @Override
@@ -116,7 +157,8 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WeatherServiceBroadcastType.CURRENT_WEATHER_DID_CHANGE.getValue());
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(todayFragmentReceiver, intentFilter);
-        WeatherService.getInstance(getContext()).reloadCurrentWeather();
+
+        WeatherService.getInstance(getContext()).reloadCurrentWeather(); // Must be here because we need to automatically refresh after return from Settings.
     }
 
     @Override
@@ -132,10 +174,9 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (OnDataLoadedListener) context;
+            onDataLoadedListener = (OnDataLoadedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnDataLoadedListener");
+            throw new ClassCastException(context.toString() + " must implement OnDataLoadedListener");
         }
     }
 
@@ -149,11 +190,14 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     public void onPrecipitationIconLoaded() {
         todayPrecipitationImageLoaded = true;
         if (todayPrecipitationImageLoaded && todayFragmentTextViewsLoaded) {
-            mCallback.onDataLoaded();
+            onDataLoadedListener.onDataLoaded();
         }
     }
 
-    private void loadEmptyCurrentWeater() {
+    /**
+     * Initializes the views with dashboards and correct unit before current data are loaded.
+     */
+    private void loadEmptyWeather() {
         cityTextView.setText("-");
         precipitationTextView.setText("-");
 
@@ -161,6 +205,10 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
         temperatureTextView.setText(new Temp().getFormattedEmptyTemp(temperatureUnit));
     }
 
+    /**
+     * Loads the current weather according to {@link CurrentWeather} instance provided.
+     * @param currentWeather Current weather
+     */
     private void loadCurrentWeather(CurrentWeather currentWeather) {
         cityTextView.setText(currentWeather.getName());
 
@@ -186,10 +234,15 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
 
         todayFragmentTextViewsLoaded = true;
         if (todayPrecipitationImageLoaded && todayFragmentTextViewsLoaded) {
-            mCallback.onDataLoaded();
+            onDataLoadedListener.onDataLoaded();
         }
     }
 
+    /**
+     * Convert speed to m/s or mi/h according to current set temperature unit.
+     * @param speed Speed before conversion
+     * @return Speed after conversion
+     */
     private int convertSpeedToProperUnit(Double speed) {
         WeatherService service = WeatherService.getInstance(getContext());
         LengthUnit lengthUnit = service.getLengthUnit(); // We want convert accroding to this setting.

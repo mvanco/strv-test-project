@@ -9,15 +9,19 @@ public class Forecast {
     @SerializedName("city")
     @Expose
     private City city;
+
     @SerializedName("cod")
     @Expose
     private String cod;
+
     @SerializedName("message")
     @Expose
     private Double message;
+
     @SerializedName("cnt")
     @Expose
     private Integer cnt;
+
     @SerializedName("list")
     @Expose
     private java.util.List<ForecastItem> list = null;
@@ -61,5 +65,4 @@ public class Forecast {
     public void setList(java.util.List<ForecastItem> list) {
         this.list = list;
     }
-
 }

@@ -37,6 +37,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/**
+ * Main activity with side menu and toolbar which shows Today and Forecast pages as the fragments.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnDataLoadedListener {
 
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Id of currently selected navigation item.
      */
-    private int selectedNavigationItemId;
+    private int selectedNavigationItemId = R.id.nav_today;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,6 +241,9 @@ public class MainActivity extends AppCompatActivity
         mToggle.syncState();
     }
 
+    /**
+     * @return Dialog for About section.
+     */
     private AlertDialog getAboutDialog() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle(R.string.dialog_about_title);
@@ -265,10 +271,16 @@ public class MainActivity extends AppCompatActivity
         return aboutDialog;
     }
 
+    /**
+     * Shows horizontal progress bar.
+     */
     private void showInfiniteHorizontalProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hide horizontal progress bar.
+     */
     private void hideInfiniteHorizontalProgerssBar() {
         progressBar.setVisibility(View.INVISIBLE);
     }

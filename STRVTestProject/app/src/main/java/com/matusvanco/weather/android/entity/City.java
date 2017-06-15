@@ -9,15 +9,19 @@ public class City {
     @SerializedName("id")
     @Expose
     private Integer id;
+
     @SerializedName("name")
     @Expose
     private String name;
+
     @SerializedName("coord")
     @Expose
     private Coord coord;
+
     @SerializedName("country")
     @Expose
     private String country;
+
     @SerializedName("population")
     @Expose
     private Integer population;
@@ -61,5 +65,4 @@ public class City {
     public void setPopulation(Integer population) {
         this.population = population;
     }
-
 }

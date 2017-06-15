@@ -33,25 +33,44 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * Created by matva on 6/8/2017.
+ * Forecast page after selection in side menu.
  */
-
 public class ForecastFragment extends Fragment implements OnPrecipitationIconLoadedListener, OnAddPrecipitationIconToLoadListener {
 
+    /**
+     * Singleton instance of ForecastFragment.
+     */
     private static ForecastFragment instance;
 
+    /**
+     * Unbinder.
+     */
     Unbinder unbinder;
 
-    private  OnDataLoadedListener mCallback;
+    /**
+     * Callback for the event where data of fragment are fully loaded after {@code reloadForecast()}
+     * on {@link WeatherService} has been called (it is also called by default during fragment creation).
+     */
+    private  OnDataLoadedListener onDataLoadedListener;
 
+    /**
+     * Adapter used to create item view shown in this fragment.
+     */
     private ForecastAdapter mAdapter;
 
-    private List<ForecastItem> mForecastItems = new ArrayList<>();
-
+    /**
+     * How many icons should be still load (progress bar must be active).
+     */
     private int forecastPrecipitationIconsToLoad = 0;
 
+    /**
+     * True if there is returned list of weater texts with temperatures from server to show.
+     */
     private boolean forecastFragmentItemsLoaded = false;
 
+    /**
+     * View that shows list of forecast items.
+     */
     @BindView(R.id.fragment_forecast_recycler_view)
     RecyclerView recyclerView;
 
@@ -68,16 +87,14 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         }
     };
 
-
+    /**
+     * @return Singleton instance
+     */
     public static ForecastFragment getInstance() {
         if (instance == null) {
             instance = new ForecastFragment();
         }
         return instance;
-    }
-
-    public ForecastFragment() {
-        mForecastItems = new ArrayList<>();
     }
 
     @Nullable
@@ -86,10 +103,8 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
         unbinder = ButterKnife.bind(this, rootView);
 
-        WeatherService.getInstance(getContext()).reloadForecast();
         TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit();
-
-        mAdapter = new ForecastAdapter(this, mForecastItems, temperatureUnit, this);
+        mAdapter = new ForecastAdapter(this, new ArrayList<ForecastItem>(), temperatureUnit);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -101,19 +116,13 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        WeatherService.getInstance(getContext()).reloadForecast();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WeatherService.WeatherServiceBroadcastType.FORECAST_DID_CHANGE.getValue());
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(forecastFragmentReceiver, intentFilter);
-        WeatherService.getInstance(getContext()).reloadCurrentWeather();
+
+        WeatherService.getInstance(getContext()).reloadForecast();
     }
 
     @Override
@@ -126,10 +135,8 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
         try {
-            mCallback = (OnDataLoadedListener) context;
+            onDataLoadedListener = (OnDataLoadedListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnDataLoadedListener");
         }
@@ -142,12 +149,13 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     }
 
     private void loadForecast(List<ForecastItem> forecastItems) {
-        setForecastItems(forecastItems);
+        TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit(); // Unit can be also changed from settings.
+        mAdapter.setForecastItems(forecastItems, temperatureUnit);
         mAdapter.notifyDataSetChanged();
 
         forecastFragmentItemsLoaded = true;
         if (isDataLoaded()) {
-            mCallback.onDataLoaded();
+            onDataLoadedListener.onDataLoaded();
         }
     }
 
@@ -156,7 +164,7 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         forecastPrecipitationIconsToLoad--;
         Log.d("ForecastFragment", "Image is loaded, " + forecastPrecipitationIconsToLoad + " to load");
         if (isDataLoaded()) {
-            mCallback.onDataLoaded();
+            onDataLoadedListener.onDataLoaded();
         }
     }
 
@@ -168,14 +176,5 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
 
     private boolean isDataLoaded() {
         return (forecastPrecipitationIconsToLoad == 0) && forecastFragmentItemsLoaded;
-    }
-
-    /**
-     * Safe setter which does not create new object which is needed since adapter is already linked with original.
-     * @param forecastItems
-     */
-    public void setForecastItems(List<ForecastItem> forecastItems) {
-        this.mForecastItems.clear();
-        this.mForecastItems.addAll(forecastItems);
     }
 }

@@ -9,6 +9,7 @@ public class Wind {
     @SerializedName("speed")
     @Expose
     private Double speed;
+
     @SerializedName("deg")
     @Expose
     private Double deg;
@@ -55,5 +56,4 @@ public class Wind {
     public void setDeg(Double deg) {
         this.deg = deg;
     }
-
 }

@@ -1,9 +1,8 @@
 package com.matusvanco.weather.android.service;
 
 /**
- * Created by matva on 6/13/2017.
+ * Called when one more precipitation icon has beel successfully loaded.
  */
-
 public interface OnPrecipitationIconLoadedListener {
 
     void onPrecipitationIconLoaded();

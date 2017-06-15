@@ -4,22 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.fragment.ForecastFragment;
-import com.matusvanco.weather.android.fragment.SettingsFragment;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * Created by matva on 6/10/2017.
+ * Handling the settings of units.
  */
-
 public class SettingsActivity extends AppCompatActivity {
 
     /**
@@ -67,7 +63,6 @@ public class SettingsActivity extends AppCompatActivity {
     private void setupActionBar() {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setTitle(R.string.action_settings);
         }
     }

@@ -1,9 +1,8 @@
 package com.matusvanco.weather.android.service;
 
 /**
- * Created by matva on 6/15/2017.
+ * Called when the new precipitation icon should be loaded in the Forecast page.
  */
-
 public interface OnAddPrecipitationIconToLoadListener {
 
     void onAddPrecipitationIconToLoad();

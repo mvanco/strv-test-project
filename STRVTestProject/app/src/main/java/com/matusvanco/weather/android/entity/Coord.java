@@ -9,6 +9,7 @@ public class Coord {
     @SerializedName("lon")
     @Expose
     private Double lon;
+
     @SerializedName("lat")
     @Expose
     private Double lat;

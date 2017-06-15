@@ -9,15 +9,19 @@ public class Main {
     @SerializedName("temp")
     @Expose
     private Double temp;
+
     @SerializedName("pressure")
     @Expose
     private Double pressure;
+
     @SerializedName("humidity")
     @Expose
     private Double humidity;
+
     @SerializedName("temp_min")
     @Expose
     private Double tempMin;
+
     @SerializedName("temp_max")
     @Expose
     private Double tempMax;
@@ -61,5 +65,4 @@ public class Main {
     public void setTempMax(Double tempMax) {
         this.tempMax = tempMax;
     }
-
 }

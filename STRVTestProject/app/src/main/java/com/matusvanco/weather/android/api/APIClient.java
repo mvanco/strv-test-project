@@ -6,9 +6,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by matva on 6/11/2017.
+ * Client to OpenWeatherMap to obtain relevant weather text data.
  */
-
 public class APIClient {
 
     public static final String BASE_URL = "http://api.openweathermap.org";
@@ -17,7 +16,8 @@ public class APIClient {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(interceptor).build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)

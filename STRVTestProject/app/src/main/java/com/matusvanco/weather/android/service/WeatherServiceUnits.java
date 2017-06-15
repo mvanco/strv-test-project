@@ -5,9 +5,8 @@ import android.content.Context;
 import com.matusvanco.weather.android.R;
 
 /**
- * Created by matva on 6/12/2017.
+ * Represent "metric" or "imperial" string which is used in query on the OpenWeatherMap server.
  */
-
 public enum WeatherServiceUnits {
     METRIC(R.string.api_interface_units_metric),
     IMPERIAL(R.string.api_interface_units_imperial);

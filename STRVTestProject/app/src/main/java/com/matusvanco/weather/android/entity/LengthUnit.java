@@ -11,6 +11,7 @@ import java.util.Locale;
  */
 
 public enum LengthUnit {
+
     METER(R.string.fragment_settings_length_meter),
     MILE(R.string.fragment_settings_length_mile);
 

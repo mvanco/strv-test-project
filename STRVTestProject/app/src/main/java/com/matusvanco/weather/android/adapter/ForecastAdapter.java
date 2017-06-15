@@ -1,12 +1,12 @@
 package com.matusvanco.weather.android.adapter;
 
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.entity.ForecastItem;
@@ -18,14 +18,14 @@ import com.matusvanco.weather.android.service.WeatherService;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by matva on 6/13/2017.
+ * Used for obtaining one row in the Forecast page.
  */
-
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder> implements OnPrecipitationIconLoadedListener {
 
     /**
@@ -33,24 +33,36 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
      */
     private Fragment fragment;
 
-    private java.util.List<ForecastItem> forecastItems;
+    /**
+     * Items which are shown byt this adapter.
+     */
+    private List<ForecastItem> forecastItems;
 
+    /**
+     * Temperature unit according to which the content is adapted.
+     */
     private TemperatureUnit temperatureUnit;
 
-    private OnPrecipitationIconLoadedListener onPrecipitationIconLoaded;
-
+    /**
+     * Raised when there is recognized new image to be load.
+     */
     private OnAddPrecipitationIconToLoadListener onAddPrecipitationIconToLoad;
+
+    /**
+     * Raised when there is loaded one more image.
+     */
+    private OnPrecipitationIconLoadedListener onPrecipitationIconLoaded;
 
     public class ForecastViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.fragment_forecast_row_item_weather_icon)
-        public AppCompatImageView icon;
+        public ImageView icon;
 
         @BindView(R.id.fragment_forecast_row_item_main_weather)
-        public AppCompatTextView mainWeather;
+        public TextView mainWeather;
 
         @BindView(R.id.fragment_forecast_row_item_temperature)
-        public AppCompatTextView temperature;
+        public TextView temperature;
 
 
         public ForecastViewHolder(View view) {
@@ -59,7 +71,15 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         }
     }
 
-    public ForecastAdapter(Fragment fragment, java.util.List<ForecastItem> forecastItems, TemperatureUnit temperatureUnit, OnPrecipitationIconLoadedListener callback) {
+    /**
+     * Shows forecast for 7 days, starting from tomorrow. Parent fragment which holds this adapter
+     * must implement {@code OnAddPrecipitationIconToLoadListener} and {@code OnPrecipitationIconLoadedListener}
+     * in order to handle progress bar properly.
+     * @param fragment Parent framgent which uses this adapter
+     * @param forecastItems Set of forecast items to be shown
+     * @param temperatureUnit Temperature unit (°C or °F) to be used in print
+     */
+    public ForecastAdapter(Fragment fragment, List<ForecastItem> forecastItems, TemperatureUnit temperatureUnit) {
         this.fragment = fragment;
         this.forecastItems = forecastItems;
         this.temperatureUnit = temperatureUnit;
@@ -101,6 +121,11 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         onPrecipitationIconLoaded.onPrecipitationIconLoaded(); // Delegation to upper Fragment.
     }
 
+    /**
+     * @param weatherText Weather text returned from OpenWeatherMap
+     * @param position Index position in the list
+     * @return Long title used in the forecast item row in format "<Weather text> on <Day of week>"
+     */
     private String getLongWeatherText(String weatherText, int position) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
         Calendar calendar = Calendar.getInstance();
@@ -111,5 +136,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         String preposition = fragment.getString(R.string.fragment_forecast_row_item_preposition);
 
         return String.format("%s %s %s", weatherText, preposition, dayOfTheWeek);
+    }
+
+    public void setForecastItems(List<ForecastItem> forecastItems, TemperatureUnit temperatureUnit) {
+        this.forecastItems = forecastItems;
+        this.temperatureUnit = temperatureUnit;
     }
 }

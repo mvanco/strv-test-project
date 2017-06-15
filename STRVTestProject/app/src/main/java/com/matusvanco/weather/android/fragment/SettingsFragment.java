@@ -6,9 +6,8 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import com.matusvanco.weather.android.R;
 
 /**
- * Created by matva on 6/8/2017.
+ * Shows the content for the {@link com.matusvanco.weather.android.activity.SettingsActivity}
  */
-
 public class SettingsFragment extends PreferenceFragmentCompat {
 
     /**
