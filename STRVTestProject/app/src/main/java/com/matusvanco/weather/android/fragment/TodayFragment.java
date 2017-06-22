@@ -50,11 +50,6 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     private static final Double METRIC_IMPERIAL_SPEED_PARAMETER_CONVERSION_COEFFICIENT = 2.23694;
 
     /**
-     * Singleton sInstance.
-     */
-    private static TodayFragment sInstance; // We need only one sInstance.
-
-    /**
      * City name.
      */
     @BindView(R.id.fragment_today_city)
@@ -109,6 +104,21 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     WeatherParameter directionParameterTextView;
 
     /**
+     * Represents current weather currently shown by this fragment.
+     */
+    private CurrentWeather currentWeather;
+
+    /**
+     * Length unit of currently shown items.
+     */
+    LengthUnit lengthUnit = LengthUnit.DEFAULT_INSTANCE;
+
+    /**
+     * Temperature unit of currently shown items.
+     */
+    TemperatureUnit temperatureUnit = TemperatureUnit.DEFAULT_INSTANCE;
+
+    /**
      * Unbinder.
      */
     private Unbinder mUnbinder;
@@ -130,13 +140,11 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     private boolean mTodayPrecipitationImageLoaded = false;
 
     /**
-     * @return Singleton sInstance
+     * @return instance of this fragment
      */
-    public static TodayFragment getInstance() {
-        if (sInstance == null) {
-            sInstance = new TodayFragment();
-        }
-        return sInstance;
+    public static TodayFragment newInstance() {
+        TodayFragment fragment = new TodayFragment();
+        return fragment;
     }
 
     /**
@@ -147,9 +155,10 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action == CURRENT_WEATHER_DATA_RETURNED.getValue()) {
+            if (CURRENT_WEATHER_DATA_RETURNED.getValue().equals(action)) {
                 CurrentWeather currentWeather = WeatherService.getInstance(getContext()).getCurrentWeather();
-                loadCurrentWeather(currentWeather);
+                setCurrentWeather(currentWeather);
+                loadCurrentWeather();
             }
         }
     };
@@ -182,7 +191,24 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
         intentFilter.addAction(WeatherServiceBroadcastType.CURRENT_WEATHER_DATA_RETURNED.getValue());
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mTodayFragmentReceiver, intentFilter);
 
-        WeatherService.getInstance(getContext()).reloadCurrentWeather(); // Must be here because we need to automatically refresh after return from Settings.
+        CurrentWeather currentWeather = WeatherService.getInstance(getContext()).getCurrentWeather();
+        if (currentWeather != null) { // If there is already loaded data it is used for initialization of fragment.
+            if (!currentWeather.equals(this.currentWeather)) { // There is different current weather, we need to load new images.
+                setCurrentWeather(currentWeather);
+                loadCurrentWeather();
+                return;
+            }
+        }
+
+        WeatherService.getInstance(getContext()).loadCurrentSettings();
+        TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit();
+        LengthUnit lengthUnit = WeatherService.getInstance(getContext()).getLengthUnit();
+        if ((this.temperatureUnit !=  temperatureUnit) || (this.lengthUnit != lengthUnit)) { // The relevant setting has changed.
+            this.temperatureUnit = temperatureUnit;
+            this.lengthUnit = lengthUnit;
+            WeatherService.getInstance(getContext()).reloadCurrentWeather(); // We need to repeatedly query the OpenWeatherMap server for proper values in given units.
+        }
+
     }
 
     @Override
@@ -238,10 +264,9 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
     }
 
     /**
-     * Loads the current weather according to {@link CurrentWeather} sInstance provided.
-     * @param currentWeather Current weather
+     * Loads the current weather according to {@link CurrentWeather} instance provided.
      */
-    private void loadCurrentWeather(CurrentWeather currentWeather) {
+    private void loadCurrentWeather() {
         cityTextView.setText(currentWeather.getName());
 
         WeatherService.getInstance(getContext()).loadPrecipitationImage(
@@ -288,5 +313,9 @@ public class TodayFragment extends android.support.v4.app.Fragment implements On
         }
 
         return (int) Math.round(result);
+    }
+
+    private void setCurrentWeather(CurrentWeather currentWeather) {
+        this.currentWeather = currentWeather;
     }
 }

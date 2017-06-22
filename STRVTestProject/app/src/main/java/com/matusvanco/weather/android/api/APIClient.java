@@ -1,5 +1,7 @@
 package com.matusvanco.weather.android.api;
 
+import com.matusvanco.weather.android.config.Config;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -13,7 +15,7 @@ public class APIClient {
     /**
      * Base URL for loading weather data from OpenWeatherMap.
      */
-    public static final String BASE_URL = "http://api.openweathermap.org";
+    public static final String BASE_URL = Config.WEATHER_SERVICE_BASE_URL;
 
     /**
      * @return Instance of {@link Retrofit} which is used to create client with interface {@link APIInterface}

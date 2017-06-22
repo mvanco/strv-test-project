@@ -50,11 +50,6 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     public static final String FORECAST_PRECIPITATION_ICONS_TO_LOAD_KEY = "com.matusvanco.weather.android.mForecastPrecipitationIconsToLoad";
 
     /**
-     * Singleton instance of ForecastFragment.
-     */
-    private static ForecastFragment sInstance;
-
-    /**
      * View that shows list of forecast items.
      */
     @BindView(R.id.fragment_forecast_recycler_view)
@@ -68,13 +63,23 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action == FORECAST_DATA_RETURNED.getValue()) {
+            if (FORECAST_DATA_RETURNED.getValue().equals(action)) {
                 List<ForecastItem> forecastItems = WeatherService.getInstance(getContext()).getForecastItems();
-                forecastItems.remove(0); // We need to remove first item because it is current weather which is not needed.
-                loadForecast(forecastItems);
+                setForecastItems(forecastItems);
+                loadForecast();
             }
         }
     };
+
+    /**
+     * List of forecast items currently shown in this fragment.
+     */
+    List<ForecastItem> forecastItems = new ArrayList<>();
+
+    /**
+     * Temperature unit of currently shown items.
+     */
+    TemperatureUnit temperatureUnit = TemperatureUnit.DEFAULT_INSTANCE;
 
     /**
      * Unbinder.
@@ -103,13 +108,11 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
     private int mForecastPrecipitationIconsToLoad = 0;
 
     /**
-     * @return Singleton sInstance
+     * @return instance of this fragment
      */
-    public static ForecastFragment getInstance() {
-        if (sInstance == null) {
-            sInstance = new ForecastFragment();
-        }
-        return sInstance;
+    public static ForecastFragment newInstance() {
+        ForecastFragment fragment = new ForecastFragment();
+        return fragment;
     }
 
     @Nullable
@@ -128,7 +131,7 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
             }
         }
 
-        TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit();
+        temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit();
         mAdapter = new ForecastAdapter(this, new ArrayList<ForecastItem>(), temperatureUnit);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -147,7 +150,21 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         intentFilter.addAction(FORECAST_DATA_RETURNED.getValue());
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mForecastFragmentReceiver, intentFilter);
 
-        WeatherService.getInstance(getContext()).reloadForecast();
+        List<ForecastItem> forecastItems = WeatherService.getInstance(getContext()).getForecastItems();
+        if (forecastItems != null) { // If there is already loaded data it is used for initialization of fragment.
+            if (!forecastItems.equals(this.forecastItems)) { // There are different items, we need to reload.
+                setForecastItems(forecastItems);
+                loadForecast();
+                return;
+            }
+        }
+
+        WeatherService.getInstance(getContext()).loadCurrentSettings();
+        TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit();
+        if (this.temperatureUnit != temperatureUnit) {
+            this.temperatureUnit = temperatureUnit;
+            WeatherService.getInstance(getContext()).reloadForecast(); // We need to update data to be shown in proper unit even if the items are the same.
+        }
     }
 
     @Override
@@ -196,7 +213,7 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
         Log.d("ForecastFragment", "New image to load, totally " + mForecastPrecipitationIconsToLoad);
     }
 
-    private void loadForecast(List<ForecastItem> forecastItems) {
+    private void loadForecast() {
         TemperatureUnit temperatureUnit = WeatherService.getInstance(getContext()).getTemperatureUnit(); // Unit can be also changed from settings.
         mAdapter.setForecastItems(forecastItems, temperatureUnit);
         mAdapter.notifyDataSetChanged();
@@ -209,5 +226,12 @@ public class ForecastFragment extends Fragment implements OnPrecipitationIconLoa
 
     private boolean isDataLoaded() {
         return (mForecastPrecipitationIconsToLoad == 0) && mForecastFragmentItemsLoaded;
+    }
+
+    private void setForecastItems(List<ForecastItem> forecastItems) {
+        if (this.forecastItems != null) {
+            this.forecastItems.clear();
+        }
+        this.forecastItems.addAll(forecastItems);
     }
 }

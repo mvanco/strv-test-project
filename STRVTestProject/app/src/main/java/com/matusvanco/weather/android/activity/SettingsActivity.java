@@ -9,6 +9,8 @@ import android.view.MenuItem;
 
 import com.matusvanco.weather.android.R;
 import com.matusvanco.weather.android.fragment.ForecastFragment;
+import com.matusvanco.weather.android.service.WeatherService;
+import com.matusvanco.weather.android.service.WeatherServiceBroadcastType;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;

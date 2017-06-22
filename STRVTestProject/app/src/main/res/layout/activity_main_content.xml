@@ -18,6 +18,6 @@
         android:layout_marginTop="@dimen/activity_main_content_progress_bar_top_margin"
         android:indeterminate="true"
         android:visibility="invisible"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+        android:textAppearance="@style/Widget.AppCompat.ProgressBar.Horizontal" />
 
 </FrameLayout>

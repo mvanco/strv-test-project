@@ -105,16 +105,16 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     @Override
     public void onBindViewHolder(ForecastViewHolder holder, int position) {
-        ForecastItem forecastItem = mForecastItems.get(position);
+        ForecastItem forecastItem = mForecastItems.get(position + 1);
         mOnAddPrecipitationIconToLoadListener.onAddPrecipitationIconToLoad();
         WeatherService.getInstance(mFragment.getContext()).loadPrecipitationImage(mFragment, forecastItem.getWeather().get(0).getIcon(), holder.icon, this);
-        holder.mainWeather.setText(getLongWeatherText(forecastItem.getWeather().get(0).getMain(), position));
+        holder.mainWeather.setText(getLongWeatherText(forecastItem.getWeather().get(0).getMain(), position + 1));
         holder.temperature.setText(forecastItem.getTemp().getFormattedTemp(mTemperatureUnit, true));
     }
 
     @Override
     public int getItemCount() {
-        return mForecastItems.size();
+        return mForecastItems.size() - 1;
     }
 
     @Override

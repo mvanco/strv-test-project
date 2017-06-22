@@ -6,10 +6,6 @@ import com.matusvanco.weather.android.R;
 
 import java.util.Locale;
 
-/**
- * Created by matva on 6/12/2017.
- */
-
 public enum LengthUnit {
 
     METER(R.string.fragment_settings_length_meter),

@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/fragment_forecast_row_item_main_weather_bottom_margin"
-            style="@style/ForecastFragmentWeatherText"
+            android:textAppearance="@style/ForecastFragmentWeatherText"
             tools:text="dalsia"/>
 
         <TextView
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_forecast_row_item_main_weather"
-            style="@style/ForecastFragmentTemperature"
+            android:textAppearance="@style/ForecastFragmentTemperature"
             tools:text="skuska"/>
 
     </LinearLayout>

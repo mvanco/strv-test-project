@@ -6,4 +6,5 @@
     <color name="dialog_about_messaage_text_color">#6d6d6d</color>
     <color name="precipitation_oval_grey">#808384</color>
     <color name="precipitation_oval_blue">#90caf9</color>
+    <color name="text_grey">#6d6d6d</color>
 </resources>

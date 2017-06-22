@@ -26,7 +26,7 @@
         android:layout_above="@+id/fragment_today_precipitation"
         android:layout_marginLeft="@dimen/fragment_today_horizontal_padding"
         android:layout_marginBottom="@dimen/fragment_today_city_bottom_margin"
-        style="@style/TodayFragmentText.City"
+        android:textAppearance="@style/TodayFragmentText.City"
         tools:text="Brno" />
 
     <LinearLayout
@@ -62,7 +62,7 @@
             android:id="@+id/fragment_today_precipitation_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TodayFragmentText.PrecipitationText" />
+            android:textAppearance="@style/TodayFragmentText.PrecipitationText" />
 
     </LinearLayout>
 
@@ -74,7 +74,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/fragment_today_temperature_bottom_margin"
         android:layout_marginRight="@dimen/fragment_today_horizontal_padding"
-        style="@style/TodayFragmentText.Temperature" />
+        android:textAppearance="@style/TodayFragmentText.Temperature" />
 
     <android.support.v7.widget.GridLayout
         android:id="@id/fragment_today_weather_parameters"

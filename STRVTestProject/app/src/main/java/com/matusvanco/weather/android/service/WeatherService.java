@@ -14,6 +14,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.matusvanco.weather.android.api.APIClient;
 import com.matusvanco.weather.android.api.APIInterface;
+import com.matusvanco.weather.android.config.Config;
 import com.matusvanco.weather.android.entity.CurrentWeather;
 import com.matusvanco.weather.android.entity.Forecast;
 import com.matusvanco.weather.android.entity.LengthUnit;
@@ -36,7 +37,7 @@ public class WeatherService {
     /**
      * Base URL for loading images from OpenWeatherMap.
      */
-    public static final String WEATHER_ICON_BASE_URL = "http://openweathermap.org/img/w/";
+    public static final String WEATHER_ICON_BASE_URL = Config.WEATHER_SERVICE_ICON_BASE_URL;
 
     /**
      * Suffix used to build the proper URL for loading images from OpenWeatherMap.
@@ -46,7 +47,7 @@ public class WeatherService {
     /**
      * City which is queried on the server OpenWeatherMap.
      */
-    private static final String QUERY_PARAMETER_CITY = "Brno,CZ"; // Brno,CZ
+    private static final String QUERY_PARAMETER_CITY = Config.WEATHER_SERVICE_QUERY_PARAMETER_CITY;
 
     /**
      * Count of requested item in the current weather query.
@@ -61,7 +62,7 @@ public class WeatherService {
     /**
      * Unique token use for accessing OpenWeatherMap service.
      */
-    private static final String QUERY_PARAMETER_APP_ID = "1c8254bc0e4c06431648f7aa6d641537";
+    private static final String QUERY_PARAMETER_APP_ID = Config.WEATHER_SERVICE_APP_ID;
 
     /**
      * Singleton sInstance.
@@ -249,7 +250,7 @@ public class WeatherService {
     /**
      * Loads current settings from {@link SharedPreferences}.
      */
-    private void loadCurrentSettings() {
+    public void loadCurrentSettings() {
         String lengthUnitPreference = mPreferences.getString(
                 SettingsFragment.LENGTH_LIST_PREFERENCE_KEY,
                 LengthUnit.DEFAULT_INSTANCE.getTitle(mAppContext));
@@ -267,7 +268,7 @@ public class WeatherService {
      *
      * @param weatherServiceBroadcastType Broadcast type
      */
-    private void sendBroadcast(WeatherServiceBroadcastType weatherServiceBroadcastType) {
+    public void sendBroadcast(WeatherServiceBroadcastType weatherServiceBroadcastType) {
         Intent intent = new Intent(weatherServiceBroadcastType.getValue());
         LocalBroadcastManager.getInstance(mAppContext).sendBroadcast(intent);
     }

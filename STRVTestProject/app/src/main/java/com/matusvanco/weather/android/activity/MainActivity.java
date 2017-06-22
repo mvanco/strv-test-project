@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.matusvanco.weather.android.R;
+import com.matusvanco.weather.android.config.Config;
 import com.matusvanco.weather.android.fragment.ForecastFragment;
 import com.matusvanco.weather.android.fragment.OnDataLoadedListener;
 import com.matusvanco.weather.android.fragment.TodayFragment;
@@ -40,16 +42,6 @@ import butterknife.Unbinder;
  */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnDataLoadedListener {
-
-    /**
-     * TAG for {@link TodayFragment}.
-     */
-    private static final String TODAY_FRAGMENT_TAG = "TodayFragment";
-
-    /**
-     * TAG for {@link ForecastFragment}.
-     */
-    private static final String FORECAST_FRAGMENT_TAG = "ForecastFragment";
 
     /**
      * Key for the {@code mFragmentType} field.
@@ -98,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Type of fragment which should be currently shown.
      */
-    private MainActivityFragmentType mFragmentType = MainActivityFragmentType.TODAY;
+    private MainActivityFragmentType mFragmentType = Config.MAIN_ACTIVITY_FRAGMENT_TYPE_DEFAULT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,8 +108,8 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if (savedInstanceState == null) { // Add initial fragment only during first start.
-            TodayFragment todayTodayFragment = TodayFragment.getInstance();
-            fragmentTransaction.add(R.id.activity_main_content_fragment_container, todayTodayFragment, TODAY_FRAGMENT_TAG);
+            TodayFragment todayTodayFragment = getTodayFragmentInstance();
+            fragmentTransaction.add(R.id.activity_main_content_fragment_container, todayTodayFragment, TodayFragment.class.getName());
             fragmentTransaction.commit();
         } else {
             if (savedInstanceState.containsKey(FRAGMENT_TYPE_KEY)) {
@@ -126,6 +118,7 @@ public class MainActivity extends AppCompatActivity
         }
         getSupportActionBar().setTitle(mFragmentType.getTitleRes());
 
+        reloadAllData();
         showInfiniteHorizontalProgressBar(); // I am still waiting for loading data.
     }
 
@@ -162,7 +155,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_refresh) {
+            reloadAllData();
+        } else if (id == R.id.action_settings) {
             startActivity(SettingsActivity.newIntent(this));
             return true;
         } else if (id == R.id.action_about) {
@@ -190,10 +185,10 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             if (mFragmentType.getItemId() == R.id.nav_today) {
                 mFragmentType = MainActivityFragmentType.TODAY;
-                fragmentTransaction.replace(R.id.activity_main_content_fragment_container, TodayFragment.getInstance(), TODAY_FRAGMENT_TAG);
+                fragmentTransaction.replace(R.id.activity_main_content_fragment_container, getTodayFragmentInstance(), TodayFragment.class.getName());
             } else if (mFragmentType.getItemId() == R.id.nav_forecast) {
                 mFragmentType = MainActivityFragmentType.FORECAST;
-                fragmentTransaction.replace(R.id.activity_main_content_fragment_container, ForecastFragment.getInstance(), FORECAST_FRAGMENT_TAG);
+                fragmentTransaction.replace(R.id.activity_main_content_fragment_container, getForecastFragmentInstance(), ForecastFragment.class.getName());
             }
             fragmentTransaction.commit();
             getSupportActionBar().setTitle(mFragmentType.getTitleRes());
@@ -256,6 +251,24 @@ public class MainActivity extends AppCompatActivity
         return aboutDialog;
     }
 
+    private TodayFragment getTodayFragmentInstance() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TodayFragment.class.getName());
+        if (fragment != null && fragment instanceof TodayFragment) {
+            return (TodayFragment) fragment;
+        } else {
+            return TodayFragment.newInstance();
+        }
+    }
+
+    private ForecastFragment getForecastFragmentInstance() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(ForecastFragment.class.getName());
+        if (fragment != null && fragment instanceof TodayFragment) {
+            return (ForecastFragment) fragment;
+        } else {
+            return ForecastFragment.newInstance();
+        }
+    }
+
     /**
      * Shows horizontal progress bar.
      */
@@ -268,5 +281,10 @@ public class MainActivity extends AppCompatActivity
      */
     private void hideInfiniteHorizontalProgerssBar() {
         mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private void reloadAllData() {
+        WeatherService.getInstance(this).reloadCurrentWeather();
+        WeatherService.getInstance(this).reloadForecast();
     }
 }

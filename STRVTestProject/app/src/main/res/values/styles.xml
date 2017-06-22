@@ -44,6 +44,8 @@
     <style name="ForecastFragmentTemperature">
         <item name="android:textSize">@dimen/fragment_forecast_row_item_temperature_text_size</item>
         <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/text_grey</item>
     </style>
 
 </resources>
